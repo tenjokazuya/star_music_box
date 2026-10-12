@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#120d2e">
+  <meta name="description" content="かたむけて、ほしのこを おうちへ。かたむけ式パズルゲーム「ほしのオルゴール」">
+  <title>ほしのオルゴール</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23221650'/%3E%3Cpath d='M32 9l7 16 17 2-13 11 4 17-15-9-15 9 4-17L8 27l17-2z' fill='%23ffd166'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="src/css/style.css">
+</head>
+<body>
+  <!-- ゲームの絵（背景・盤面・演出）はすべてこのキャンバスに描く -->
+  <canvas id="stage" aria-hidden="true"></canvas>
+
+  <!-- 画面（DOM）。キャンバスの上に重ねる。文言は data-t 属性で src/js/data/text.js から差し込む -->
+  <div id="ui">
+
+    <!-- 起動画面: 音の自動再生制限を解除するため、最初に必ず1回操作してもらう -->
+    <section id="screen-boot" class="screen" aria-label="はじまり">
+      <button id="btn-boot" class="boot" type="button">
+        <svg class="boot-star" viewBox="0 0 64 64" aria-hidden="true"><path d="M32 5l7.8 18.2 19.7 1.9-14.9 12.9 4.5 19.3L32 47.2 14.9 57.3l4.5-19.3L4.5 25.1l19.7-1.9z"/></svg>
+        <span class="boot-tap" data-t="boot.tap"></span>
+        <span class="boot-note" data-t="boot.note"></span>
+      </button>
+    </section>
+
+    <!-- タイトル -->
+    <section id="screen-title" class="screen" aria-label="タイトル">
+      <div class="title-block">
+        <p class="title-eyebrow" data-t="titleScreen.eyebrow"></p>
+        <h1 class="logo" data-t="title"></h1>
+        <p class="subtitle" data-t="subtitle"></p>
+      </div>
+      <nav class="menu title-menu" id="title-menu" aria-label="メインメニュー">
+        <button class="btn btn-primary btn-wide" id="btn-start" type="button" data-t="titleScreen.start"></button>
+        <button class="btn btn-primary btn-wide" id="btn-continue" type="button" data-t="titleScreen.continueGame" hidden></button>
+        <button class="btn btn-wide" id="btn-select" type="button" data-t="titleScreen.select"></button>
+        <button class="btn btn-wide" id="btn-help" type="button" data-t="titleScreen.help"></button>
+        <button class="btn btn-wide" id="btn-settings" type="button" data-t="titleScreen.settings"></button>
+        <button class="btn btn-wide" id="btn-ending" type="button" data-t="titleScreen.ending" hidden></button>
+      </nav>
+      <p class="title-foot" data-t="titleScreen.foot"></p>
+    </section>
+
+    <!-- ステージ選択 -->
+    <section id="screen-select" class="screen" aria-label="ステージえらび">
+      <header class="sel-top">
+        <button class="btn btn-icon" id="sel-back" type="button" aria-label="もどる">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <h2 class="sel-title" data-t="select.title"></h2>
+        <div class="sel-total" aria-live="polite">
+          <svg class="star-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.3 5.8 21.1l1.6-7L2 9.3l7.1-.7z"/></svg>
+          <b id="sel-stars">0</b><span id="sel-stars-max">/ 90</span>
+        </div>
+      </header>
+      <div class="world-strip">
+        <button class="strip-arrow" id="tabs-prev" type="button" aria-label="まえの ワールドを みる">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        </button>
+        <div class="world-tabs" id="world-tabs" role="tablist" aria-label="ワールド"></div>
+        <button class="strip-arrow" id="tabs-next" type="button" aria-label="つぎの ワールドを みる">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="world-info">
+        <h3 id="world-name"></h3>
+        <p id="world-story"></p>
+      </div>
+      <div class="stage-grid" id="stage-grid"></div>
+    </section>
+
+    <!-- プレイ（HUD） -->
+    <section id="screen-play" class="screen" aria-label="プレイ画面">
+      <header class="hud-top">
+        <button class="btn btn-icon" id="btn-menu" type="button" aria-label="メニュー">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+        </button>
+        <div class="hud-title">
+          <span class="hud-stage" id="hud-stage">1-1</span>
+          <span class="hud-name" id="hud-name"></span>
+        </div>
+        <div class="hud-moves" aria-live="polite">
+          <span class="label" data-t="hud.moves"></span><b id="hud-moves">0</b>
+          <span class="sep">/</span>
+          <span class="label" data-t="hud.par"></span><b id="hud-par">0</b>
+        </div>
+      </header>
+
+      <p class="hud-hint" id="hud-hint" hidden></p>
+
+      <footer class="hud-bottom">
+        <button class="btn" id="btn-undo" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></svg>
+          <span data-t="hud.undo"></span>
+        </button>
+        <button class="btn" id="btn-reset" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" /><path d="M20 4v5h-5" /></svg>
+          <span data-t="hud.reset"></span>
+        </button>
+        <button class="btn" id="btn-hint" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .8-4.4 4.2 1.1 6-5.3-3-5.3 3 1.1-6L3.4 9.4l6-.8z" /></svg>
+          <span data-t="hud.hint"></span>
+        </button>
+      </footer>
+    </section>
+
+    <!-- ワールドクリア -->
+    <section id="screen-worldclear" class="screen" aria-label="ワールドクリア">
+      <div class="center-block">
+        <p class="wc-eyebrow" id="wc-world"></p>
+        <h2 class="wc-title" data-t="worldClear.title"></h2>
+        <p class="wc-stars">
+          <svg class="star-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.3 5.8 21.1l1.6-7L2 9.3l7.1-.7z"/></svg>
+          <span data-t="worldClear.stars"></span> <b id="wc-star-count"></b>
+        </p>
+        <p class="wc-line" id="wc-line"></p>
+        <button class="btn btn-primary btn-wide" id="wc-next" type="button" data-t="worldClear.next"></button>
+      </div>
+    </section>
+
+    <!-- エンディング -->
+    <section id="screen-ending" class="screen" aria-label="エンディング">
+      <div class="ending-text" id="ending-text" aria-live="polite"></div>
+      <div class="ending-end" id="ending-end">
+        <p class="ending-fin" data-t="ending.fin"></p>
+        <p class="ending-credit" data-t="ending.credit"></p>
+        <dl class="ending-stats">
+          <div><dt data-t="ending.stats.stars"></dt><dd id="end-stars"></dd></div>
+          <div><dt data-t="ending.stats.moves"></dt><dd id="end-moves"></dd></div>
+          <div><dt data-t="ending.stats.time"></dt><dd id="end-time"></dd></div>
+        </dl>
+        <button class="btn btn-primary btn-wide" id="ending-title" type="button" data-t="ending.toTitle"></button>
+      </div>
+    </section>
+
+    <!-- ポーズ -->
+    <div id="overlay-pause" class="overlay" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+      <div class="panel panel-menu">
+        <h2 id="pause-title" data-t="pause.title"></h2>
+        <div class="menu">
+          <button class="btn btn-primary btn-wide" id="pause-resume" type="button" data-t="pause.resume"></button>
+          <button class="btn btn-wide" id="pause-restart" type="button" data-t="pause.restart"></button>
+          <button class="btn btn-wide" id="pause-help" type="button" data-t="pause.help"></button>
+          <button class="btn btn-wide" id="pause-settings" type="button" data-t="pause.settings"></button>
+          <button class="btn btn-wide" id="pause-select" type="button" data-t="pause.select"></button>
+          <button class="btn btn-wide" id="pause-title-btn" type="button" data-t="pause.title2"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ステージクリア -->
+    <div id="overlay-clear" class="overlay overlay-clear" role="dialog" aria-modal="true" aria-labelledby="clear-title">
+      <div class="panel panel-clear">
+        <p class="clear-stage" id="clear-stage"></p>
+        <h2 id="clear-title" data-t="clear.title"></h2>
+        <div class="clear-stars" id="clear-stars" aria-live="polite">
+          <svg class="big-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.3 5.8 21.1l1.6-7L2 9.3l7.1-.7z"/></svg>
+          <svg class="big-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.3 5.8 21.1l1.6-7L2 9.3l7.1-.7z"/></svg>
+          <svg class="big-star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.9 6.6 7.1.7-5.4 4.8 1.6 7L12 17.3 5.8 21.1l1.6-7L2 9.3l7.1-.7z"/></svg>
+        </div>
+        <p class="clear-moves">
+          <span data-t="clear.moves"></span><b id="clear-moves">0</b>
+          <span class="sep">/</span>
+          <span data-t="clear.par"></span><b id="clear-par">0</b>
+        </p>
+        <p class="clear-msg" id="clear-msg"></p>
+        <p class="clear-badge" id="clear-badge" hidden></p>
+        <div class="clear-actions">
+          <button class="btn btn-primary" id="clear-next" type="button" data-t="clear.next"></button>
+          <button class="btn" id="clear-retry" type="button" data-t="clear.retry"></button>
+          <button class="btn" id="clear-select" type="button" data-t="clear.select"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- せってい -->
+    <div id="overlay-settings" class="overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div class="panel panel-settings">
+        <h2 id="settings-title" data-t="settings.title"></h2>
+        <div class="settings-list">
+          <label class="row"><span data-t="settings.bgm"></span><input type="range" id="set-bgm" min="0" max="100" step="5"><output id="out-bgm"></output></label>
+          <label class="row"><span data-t="settings.sfx"></span><input type="range" id="set-sfx" min="0" max="100" step="5"><output id="out-sfx"></output></label>
+          <label class="row"><span data-t="settings.amb"></span><input type="range" id="set-amb" min="0" max="100" step="5"><output id="out-amb"></output></label>
+          <label class="row check"><input type="checkbox" id="set-muted"><span class="check-ui" aria-hidden="true"></span><span data-t="settings.muted"></span></label>
+          <label class="row check"><input type="checkbox" id="set-reduced"><span class="check-ui" aria-hidden="true"></span><span data-t="settings.reduced"></span></label>
+          <label class="row check"><input type="checkbox" id="set-marks"><span class="check-ui" aria-hidden="true"></span><span data-t="settings.marks"></span></label>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-danger" id="set-erase" type="button" data-t="settings.erase"></button>
+          <button class="btn btn-primary" id="set-close" type="button" data-t="settings.close"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- あそびかた -->
+    <div id="overlay-help" class="overlay" role="dialog" aria-modal="true" aria-labelledby="help-title">
+      <div class="panel panel-help">
+        <h2 id="help-title" data-t="help.title"></h2>
+        <div class="help-body" id="help-body"></div>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="help-close" type="button" data-t="help.close"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 確認ダイアログ -->
+    <div id="overlay-confirm" class="overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-body">
+      <div class="panel panel-confirm">
+        <h2 id="confirm-title"></h2>
+        <p id="confirm-body"></p>
+        <div class="panel-actions">
+          <button class="btn btn-primary" id="confirm-no" type="button"></button>
+          <button class="btn btn-danger" id="confirm-yes" type="button"></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <noscript><p style="color:#fff;padding:2em">このゲームは JavaScript を使います。ブラウザの設定で JavaScript を有効にしてください。</p></noscript>
+
+  <!-- 読み込み順は managements/project/tech-design.md §2.1 に従う（ES Modules は file:// で使えないため使わない） -->
+  <script src="src/js/core/rng.js"></script>
+  <script src="src/js/core/util.js"></script>
+  <script src="src/js/core/engine.js"></script>
+  <script src="src/js/core/solver.js"></script>
+  <script src="src/js/data/text.js"></script>
+  <script src="src/js/data/worlds.js"></script>
+  <script src="src/js/data/levels.js"></script>
+  <script src="src/js/audio/audio.js"></script>
+  <script src="src/js/audio/sound.js"></script>
+  <script src="src/js/audio/songs.js"></script>
+  <script src="src/js/audio/voices.js"></script>
+  <script src="src/js/audio/sfx.js"></script>
+  <script src="src/js/audio/ambience.js"></script>
+  <script src="src/js/audio/music.js"></script>
+  <script src="src/js/audio/director.js"></script>
+  <script src="src/js/render/canvas.js"></script>
+  <script src="src/js/render/particles.js"></script>
+  <script src="src/js/render/sprites.js"></script>
+  <script src="src/js/render/background.js"></script>
+  <script src="src/js/render/background-extra.js"></script>
+  <script src="src/js/render/board-view.js"></script>
+  <script src="src/js/render/scenes.js"></script>
+  <script src="src/js/game/session.js"></script>
+  <script src="src/js/game/save.js"></script>
+  <script src="src/js/game/input.js"></script>
+  <script src="src/js/game/ui.js"></script>
+  <script src="src/js/game/app.js"></script>
+  <script src="src/js/main.js"></script>
+</body>
+</html>
