@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#14101c">
+<title>ラーメンパニック ～屋台から天下一へ～</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="stage"><canvas id="screen" width="384" height="216"></canvas></div>
+<div id="rotate"><div>画面を横向きにしてください<br><span>ラーメンパニックは横画面で遊びます</span></div></div>
+<noscript>JavaScriptを有効にしてください。</noscript>
+
+<!-- ES Modules は使わない。file:// で動かすため通常の script を順に読み込む。順序がここの正本。 -->
+<!-- core -->
+<script src="js/core/namespace.js"></script>
+<script src="js/core/util.js"></script>
+<script src="js/core/rng.js"></script>
+<script src="js/data/palette.js"></script>
+<script src="js/core/gfx.js"></script>
+<script src="js/core/text.js"></script>
+<script src="js/core/input.js"></script>
+<script src="js/core/fx.js"></script>
+<script src="js/core/scene.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/core/storage.js"></script>
+<script src="js/core/audio.js"></script>
+<script src="js/core/music.js"></script>
+<!-- data -->
+<script src="js/data/menu.js"></script>
+<script src="js/data/tiers.js"></script>
+<script src="js/data/customers.js"></script>
+<script src="js/data/items.js"></script>
+<script src="js/data/tuning.js"></script>
+<script src="js/data/songs.js"></script>
+<script src="js/data/achievements.js"></script>
+<script src="js/data/texts.js"></script>
+<script src="js/data/sprites.js"></script>
+<!-- game -->
+<script src="js/game/state.js"></script>
+<script src="js/game/service_core.js"></script>
+<script src="js/game/custart.js"></script>
+<script src="js/game/background.js"></script>
+<script src="js/game/service.js"></script>
+<script src="js/game/result.js"></script>
+<script src="js/game/morning.js"></script>
+<script src="js/game/shop.js"></script>
+<script src="js/game/move.js"></script>
+<script src="js/game/menus.js"></script>
+<script src="js/game/title.js"></script>
+<script src="js/game/ending.js"></script>
+<script src="js/game/sheet.js"></script>
+<script src="js/game/boot.js"></script>
+<!-- dev（開発用ボット。製品版パッケージでは除外） -->
+<script src="js/dev/bot.js"></script>
+<!-- main -->
+<script src="js/main.js"></script>
+</body>
+</html>
