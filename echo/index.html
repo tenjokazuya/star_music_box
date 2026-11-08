@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ECHO BEACON ― 遠き救難信号 ―</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="view">
+    <canvas id="screen" width="320" height="240"></canvas>
+    <div id="scan"></div>
+  </div>
+  <div id="touch" class="hidden">
+    <div id="dpad">
+      <div class="arrow up">▲</div><div class="arrow down">▼</div>
+      <div class="arrow left">◀</div><div class="arrow right">▶</div>
+      <div id="knob"></div>
+    </div>
+    <div id="btns">
+      <div class="btn" id="b-bomb" data-act="bomb"><span>BOMB</span></div>
+      <div class="btn big" id="b-shot" data-act="shot"><span>SHOT</span></div>
+      <div class="btn small" id="b-slow" data-act="slow"><span>SLOW</span></div>
+    </div>
+    <div class="btn tiny" id="b-pause" data-act="pause"><span>Ⅱ</span></div>
+  </div>
+  <noscript>JavaScript を有効にしてください。</noscript>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/util.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/fontdata.js"></script>
+<script src="js/font.js"></script>
+<script src="js/gfx.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/art_boss.js"></script>
+<script src="js/art_misc.js"></script>
+<script src="js/input.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/songs.js"></script>
+<script src="js/bg.js"></script>
+<script src="js/scenario.js"></script>
+<script src="js/bullets.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/player.js"></script>
+<script src="js/enemies.js"></script>
+<script src="js/bosses.js"></script>
+<script src="js/stages.js"></script>
+<script src="js/portraits.js"></script>
+<script src="js/dialogue.js"></script>
+<script src="js/game.js"></script>
+<script src="js/scenes.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
