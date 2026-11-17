@@ -1,0 +1,121 @@
+/* style.css — 画面の整数倍拡大とソフトキー */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  overscroll-behavior: none;
+}
+body {
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  font-family: monospace;
+  color: #fff;
+}
+#app {
+  position: absolute;
+  left: 0; top: 0; right: 0; bottom: 0;
+}
+#stage {
+  position: absolute;
+  line-height: 0;
+  background: #000;
+  --s: 3px;
+}
+#screen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: -moz-crisp-edges;
+  background: #000;
+}
+/* 液晶風のすじ（設定でオン） */
+#lcd { display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none; }
+body.lcd #lcd {
+  display: block;
+  background-image:
+    linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) calc(var(--s) - 1px), rgba(0,0,0,.18) calc(var(--s) - 1px), rgba(0,0,0,.18) var(--s)),
+    linear-gradient(to right, rgba(0,0,0,0) 0, rgba(0,0,0,0) calc(var(--s) - 1px), rgba(0,0,0,.12) calc(var(--s) - 1px), rgba(0,0,0,.12) var(--s));
+  background-size: var(--s) var(--s);
+}
+
+/* ---- ソフトキー ---- */
+#pad { display: none; position: absolute; left: 0; top: 0; right: 0; bottom: 0; pointer-events: none; }
+body.pad-on #pad { display: block; }
+#pad > * { pointer-events: auto; touch-action: none; }
+
+#dpad {
+  position: absolute;
+  width: var(--dsz, 150px); height: var(--dsz, 150px);
+  left: var(--dx, 10px); top: var(--dy, 10px);
+}
+#dpad .dp {
+  position: absolute;
+  background: rgba(60, 70, 110, .62);
+  border: 2px solid rgba(220, 230, 255, .55);
+  box-sizing: border-box;
+}
+#dpad .dp.up    { left: 33.3%; top: 0;      width: 33.4%; height: 38%; border-radius: 10px 10px 0 0; }
+#dpad .dp.down  { left: 33.3%; bottom: 0;   width: 33.4%; height: 38%; border-radius: 0 0 10px 10px; }
+#dpad .dp.left  { left: 0;     top: 33.3%;  height: 33.4%; width: 38%; border-radius: 10px 0 0 10px; }
+#dpad .dp.right { right: 0;    top: 33.3%;  height: 33.4%; width: 38%; border-radius: 0 10px 10px 0; }
+#dpad .dp-mid {
+  position: absolute; left: 33.3%; top: 33.3%; width: 33.4%; height: 33.4%;
+  background: rgba(60, 70, 110, .62); border: 2px solid rgba(220, 230, 255, .35); box-sizing: border-box;
+}
+#dpad .ar {
+  position: absolute; width: 0; height: 0; pointer-events: none;
+  border: calc(var(--dsz, 150px) * .075) solid transparent;
+}
+#dpad .ar.up    { left: 50%; top: 8%;  margin-left: calc(var(--dsz, 150px) * -.075); border-bottom-color: rgba(255,255,255,.85); border-top-width: 0; }
+#dpad .ar.down  { left: 50%; bottom: 8%; margin-left: calc(var(--dsz, 150px) * -.075); border-top-color: rgba(255,255,255,.85); border-bottom-width: 0; }
+#dpad .ar.left  { top: 50%; left: 8%;  margin-top: calc(var(--dsz, 150px) * -.075); border-right-color: rgba(255,255,255,.85); border-left-width: 0; }
+#dpad .ar.right { top: 50%; right: 8%; margin-top: calc(var(--dsz, 150px) * -.075); border-left-color: rgba(255,255,255,.85); border-right-width: 0; }
+#dpad.on-up .dp.up, #dpad.on-down .dp.down, #dpad.on-left .dp.left, #dpad.on-right .dp.right {
+  background: rgba(150, 170, 255, .85);
+}
+
+#abtn {
+  position: absolute;
+  width: var(--asz, 150px); height: var(--asz, 150px);
+  left: var(--ax, 10px); top: var(--ay, 10px);
+}
+#abtn .btn {
+  position: absolute;
+  width: 46%; height: 46%;
+  border-radius: 50%;
+  background: rgba(180, 60, 70, .66);
+  border: 2px solid rgba(255, 220, 220, .6);
+  box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  font: bold calc(var(--asz, 150px) * .15) monospace;
+  color: rgba(255,255,255,.9);
+}
+#abtn .btn[data-k="a"] { right: 0; top: 4%; }
+#abtn .btn[data-k="b"] { left: 0; bottom: 4%; }
+#abtn .btn.on { background: rgba(255, 130, 140, .9); }
+
+#sysbtn {
+  position: absolute;
+  left: var(--sx, 10px); top: var(--sy, 10px);
+  width: var(--ssz, 180px);
+  display: flex; justify-content: space-between;
+}
+#sysbtn .pill {
+  width: 46%; height: var(--sh, 26px);
+  border-radius: 14px;
+  background: rgba(60, 70, 110, .62);
+  border: 2px solid rgba(220, 230, 255, .5);
+  box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  font: bold calc(var(--sh, 26px) * .36) monospace;
+  color: rgba(255,255,255,.85);
+}
+#sysbtn .pill.on { background: rgba(150, 170, 255, .85); }
