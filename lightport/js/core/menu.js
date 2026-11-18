@@ -147,16 +147,17 @@
     enter: function () {
       this.t = 0; this.open = 0;
       var self = this;
-      this.entries = [
-        { id: 'items', label: 'もちもの' },
-        { id: 'memo', label: 'めもちょう' },
-        { id: 'save', label: 'きろくする' }
-      ];
+      var prev = this.entries[this.cur] ? this.entries[this.cur].id : null;   // 前回選んでいた項目（並びが変わっても同じ項目に戻す）
+      this.entries = [{ id: 'items', label: 'もちもの' }];
+      // めもちょうは、おじいちゃんから受け取る（house.js）までは持っていないので、項目も出さない
+      if (save.has('memo')) { this.entries.push({ id: 'memo', label: 'めもちょう' }); }
+      this.entries.push({ id: 'save', label: 'きろくする' });
       if (Game.field.canResetPuzzle()) { this.entries.push({ id: 'reset', label: 'パズルを もどす' }); }
       this.entries.push({ id: 'settings', label: 'せってい' });
       this.entries.push({ id: 'title', label: 'タイトルへ' });
       this.entries.push({ id: 'close', label: 'とじる' });
-      if (this.cur >= this.entries.length) { this.cur = 0; }
+      this.cur = 0;
+      for (var i = 0; i < this.entries.length; i++) { if (this.entries[i].id === prev) { this.cur = i; } }
       Game.field.snapshot();
     },
     resume: function () { this.t = 0; Game.input.clear(); },

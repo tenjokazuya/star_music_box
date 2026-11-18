@@ -162,9 +162,10 @@
   /* ---- 描画 ---- */
   var cache = {};      // 'color|ch' → canvas
   var bigCache = {};
-  var MARK_DAKU = [[6, 0], [6, 1], [5, 2], [8, 0], [8, 1], [7, 2]];
-  var MARK_HANDAKU = [[6, 0], [7, 0], [5, 1], [8, 1], [6, 2], [7, 2]];
-  var TOP = 3;         // キャンバス内で字形上端の位置（濁点の余白）
+  var MARK_DAKU = [[6, 0], [7, 1], [7, 2], [8, 0], [9, 1], [9, 2]];
+  var MARK_HANDAKU = [[8, 0], [9, 1], [8, 2], [7, 1]];
+  var TOP = 2;         // キャンバス内で字形上端の位置（濁点の余白）
+  F.marks = { daku: MARK_DAKU, handaku: MARK_HANDAKU, top: TOP };   // tools/font-png.js が同じ位置で描くために公開
 
   function render(ch, color) {
     var key = color + '|' + ch;

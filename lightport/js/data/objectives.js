@@ -14,7 +14,7 @@
         return out;
       }
       if (f('lamp_lit')) { out.push('みなとへ もどろう。'); return out; }
-      if (!f('talked_grandpa')) { out.push('おじいちゃんに はなしを きいてみよう。'); return out; }
+      // めもちょうは、おじいちゃんの依頼を聞いて受け取ったあと（talked_grandpa）にしか開けない（menu.js）
       var parts = ['got_oil', 'got_lens', 'got_flint'].filter(function (k) { return !f(k); });
       if (!parts.length) {
         out.push('3つ そろった。とうだいの てっぺんで ひを ともそう。');
