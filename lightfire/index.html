@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0a10">
+<title>ともしびの ひもり</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="device">
+  <div id="screenwrap"><canvas id="screen" width="240" height="160"></canvas></div>
+  <div id="pad"></div>
+</div>
+<noscript><div id="noscript">JavaScript を ゆうこうに してください。</div></noscript>
+
+<!-- 注意: ES Modules は使用しない。file:// で動作させるため、すべて通常の script で順に読み込む -->
+<!-- core -->
+<script src="js/core/util.js"></script>
+<script src="js/core/input.js"></script>
+<script src="js/core/font_data.js"></script>
+<script src="js/core/font.js"></script>
+<script src="js/core/audio.js"></script>
+<script src="js/data/music.js"></script>
+<script src="js/core/gfx_tiles.js"></script>
+<script src="js/core/gfx_sprites.js"></script>
+<script src="js/core/gfx_monsters.js"></script>
+<script src="js/core/scene.js"></script>
+<script src="js/core/save.js"></script>
+<script src="js/core/ui.js"></script>
+<script src="js/data/db.js"></script>
+<script src="js/data/npcs.js"></script>
+<script src="js/data/helpers.js"></script>
+<script src="js/core/mapkit.js"></script>
+<script src="js/core/maps.js"></script>
+<script src="js/core/field.js"></script>
+<script src="js/core/script.js"></script>
+<script src="js/core/battle.js"></script>
+<script src="js/core/menu.js"></script>
+<script src="js/core/title.js"></script>
+
+<!-- マップ（1マップ1ディレクトリ。base を先に、part は後に読み込む） -->
+<!--MAPS-->
+<script src="maps/kotori_home/base.js"></script>
+<script src="maps/kotori_home/part_prologue.js"></script>
+<script src="maps/kotori_home/part_after.js"></script>
+<script src="maps/kotori/base.js"></script>
+<script src="maps/kotori/part_prologue.js"></script>
+<script src="maps/kotori/part_ch1.js"></script>
+<script src="maps/kotori/part_after.js"></script>
+<script src="maps/kotori_elder/base.js"></script>
+<script src="maps/kotori_kota/base.js"></script>
+<script src="maps/kotori_shop/base.js"></script>
+<script src="maps/kotori_shrine/base.js"></script>
+<script src="maps/forest/base.js"></script>
+<script src="maps/cave1_a/base.js"></script>
+<script src="maps/cave1_a/part_solved.js"></script>
+<script src="maps/cave1_b/base.js"></script>
+<script src="maps/cave1_b/part_solved.js"></script>
+<script src="maps/cave1_c/base.js"></script>
+<script src="maps/cave1_c/part_solved.js"></script>
+<script src="maps/cave1_boss/base.js"></script>
+<script src="maps/cave1_boss/part_after.js"></script>
+<script src="maps/world/base.js"></script>
+<script src="maps/world/part_open.js"></script>
+<script src="maps/nagi/base.js"></script>
+<script src="maps/nagi/part_ch2.js"></script>
+<script src="maps/nagi/part_ch3.js"></script>
+<script src="maps/nagi_shop/base.js"></script>
+<script src="maps/nagi_tavern/base.js"></script>
+<script src="maps/nagi_house/base.js"></script>
+<script src="maps/nagi/part_welcome.js"></script>
+<script src="maps/lighthouse_1/base.js"></script>
+<script src="maps/lighthouse_1/part_solved.js"></script>
+<script src="maps/lighthouse_2/base.js"></script>
+<script src="maps/lighthouse_2/part_solved.js"></script>
+<script src="maps/lighthouse_3/base.js"></script>
+<script src="maps/lighthouse_3/part_solved.js"></script>
+<script src="maps/lighthouse_top/base.js"></script>
+<script src="maps/fubuki/base.js"></script>
+<script src="maps/fubuki/part_ch3.js"></script>
+<script src="maps/fubuki/part_welcome.js"></script>
+<script src="maps/fubuki_shop/base.js"></script>
+<script src="maps/fubuki_house/base.js"></script>
+<script src="maps/icecave_a/base.js"></script>
+<script src="maps/icecave_b/base.js"></script>
+<script src="maps/icecave_b/part_solved.js"></script>
+<script src="maps/icecave_boss/base.js"></script>
+<script src="maps/kazan/base.js"></script>
+<script src="maps/kazan/part_ch4.js"></script>
+<script src="maps/kazan_forge/base.js"></script>
+<script src="maps/kazan_inn/base.js"></script>
+<script src="maps/volc_a/base.js"></script>
+<script src="maps/volc_a/part_solved.js"></script>
+<script src="maps/volc_b/base.js"></script>
+<script src="maps/volc_b/part_solved.js"></script>
+<script src="maps/volc_boss/base.js"></script>
+<script src="maps/tower_1/base.js"></script>
+<script src="maps/tower_2/base.js"></script>
+<script src="maps/tower_2/part_solved.js"></script>
+<script src="maps/tower_3/base.js"></script>
+<script src="maps/tower_3/part_solved.js"></script>
+<script src="maps/tower_top/base.js"></script>
+<script src="maps/kotori/part_final.js"></script>
+<script src="maps/kotori/part_clear.js"></script>
+<script src="maps/kotori_shrine/part_secret.js"></script>
+<script src="maps/forest/part_spring.js"></script>
+<script src="maps/fubuki/part_spring.js"></script>
+<script src="maps/garden/base.js"></script>
+<script src="maps/ruins_a/base.js"></script>
+<script src="maps/ruins_a/part_solved.js"></script>
+<script src="maps/ruins_boss/base.js"></script>
+<!--/MAPS-->
+
+<script src="js/main.js"></script>
+</body>
+</html>
