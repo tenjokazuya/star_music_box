@@ -1,0 +1,45 @@
+html, body {
+  margin: 0; padding: 0; width: 100%; height: 100%;
+  background: #05060a; overflow: hidden;
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+  touch-action: none; overscroll-behavior: none;
+}
+#app { position: fixed; inset: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+#screen {
+  position: absolute; display: block; background: #000;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  box-shadow: 0 0 0 2px #14161e, 0 0 24px rgba(0, 0, 0, 0.8);
+}
+#err { display: none; position: fixed; left: 0; top: 0; right: 0; max-height: 40%; overflow: auto; z-index: 99;
+  background: rgba(60, 0, 0, 0.85); color: #fcc; font: 11px monospace; white-space: pre-wrap; padding: 6px; }
+
+/* ---- ソフトキー ---- */
+#pad { position: absolute; inset: 0; pointer-events: none; display: none; }
+#pad .sk { position: absolute; pointer-events: auto; touch-action: none; box-sizing: border-box; }
+#pad .sk span { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center;
+  font: bold 14px/1 "Trebuchet MS", sans-serif; color: rgba(255, 255, 255, 0.75); letter-spacing: 1px; }
+#pad.landscape .sk { opacity: 0.78; }
+
+.dpad { border-radius: 50%; background: radial-gradient(circle, rgba(70, 74, 92, 0.35) 0%, rgba(30, 32, 44, 0.15) 70%, transparent 71%); }
+.dpad .dp-h, .dpad .dp-v { position: absolute; background: linear-gradient(#3a3d4c, #22242e); border-radius: 6px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.12), 0 3px 0 #0c0d12; }
+.dpad .dp-h { left: 4%; right: 4%; top: 34%; bottom: 34%; }
+.dpad .dp-v { top: 4%; bottom: 4%; left: 34%; right: 34%; }
+.dpad .dp-c { position: absolute; left: 40%; right: 40%; top: 40%; bottom: 40%; border-radius: 50%; background: #1a1c24; }
+.dpad.d-up .dp-v { background: linear-gradient(#5a5e76 0%, #5a5e76 30%, #22242e 31%); }
+.dpad.d-down .dp-v { background: linear-gradient(#22242e 0%, #22242e 69%, #5a5e76 70%); }
+.dpad.d-left .dp-h { background: linear-gradient(90deg, #5a5e76 0%, #5a5e76 30%, #22242e 31%); }
+.dpad.d-right .dp-h { background: linear-gradient(90deg, #22242e 0%, #22242e 69%, #5a5e76 70%); }
+
+.btn { border-radius: 50%; background: radial-gradient(circle at 35% 30%, #d8607a, #a02a48 60%, #6a1830);
+  box-shadow: 0 4px 0 #3c0c1c, inset 0 2px 0 rgba(255, 255, 255, 0.25); }
+.btn-b { background: radial-gradient(circle at 35% 30%, #8c7ad8, #5440a8 60%, #2e2268); box-shadow: 0 4px 0 #180e3c, inset 0 2px 0 rgba(255, 255, 255, 0.25); }
+.btn.on { transform: translateY(3px); box-shadow: 0 1px 0 #200810; filter: brightness(1.25); }
+.btn span { font-size: 18px; }
+
+.pill { border-radius: 999px; background: linear-gradient(#4a4e60, #2a2c38); box-shadow: 0 3px 0 #0e0f14; }
+.pill span { font-size: 9px; color: rgba(220, 222, 235, 0.7); }
+.pill.on, .sh.on { transform: translateY(2px); filter: brightness(1.3); }
+.sh { border-radius: 10px 10px 4px 4px; background: linear-gradient(#4a4e60, #23252f); box-shadow: 0 3px 0 #0e0f14; }
+.sh span { font-size: 13px; }

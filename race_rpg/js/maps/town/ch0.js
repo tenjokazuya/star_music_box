@@ -1,0 +1,102 @@
+/* キリハラ町: 序章（stage 0）— 帰郷、ミオとの再会、ケンタとの勝負 */
+(function () {
+  'use strict';
+  var RR = window.RR, K = RR.MapKit;
+
+  // バス（真上から見た図）
+  function drawBus(g, x, y) {
+    g.fillStyle = 'rgba(0,0,16,0.3)'; g.fillRect(x + 2, y + 4, 30, 60);
+    g.fillStyle = '#183048'; g.fillRect(x, y, 30, 62);
+    g.fillStyle = '#3c7cc0'; g.fillRect(x + 1, y + 1, 28, 60);
+    g.fillStyle = '#e8e8f0'; g.fillRect(x + 1, y + 20, 28, 6);
+    g.fillStyle = '#5c9cd8'; g.fillRect(x + 3, y + 3, 24, 14);
+    g.fillStyle = '#d8e0f0'; g.fillRect(x + 4, y + 30, 22, 26); g.fillStyle = '#b8c4d8'; g.fillRect(x + 4, y + 42, 22, 1);
+    g.fillStyle = '#f8f0c0'; g.fillRect(x + 2, y + 60, 4, 2); g.fillRect(x + 24, y + 60, 4, 2);
+  }
+
+  async function arrival(E) {
+    E.setFlag('intro');
+    await E.letterbox(true);
+    var bus = E.spawn({ id: 'bus', x: 29, y: 39, dir: 'down', solid: false, draw: function (g, x, y) { drawBus(g, x - 8, y - 40); } });
+    E.stopBgm(0);
+    E.sfx('horn');
+    await E.wait(30);
+    await E.msg('やまあいの ちいさな まち キリハラ。');
+    await E.msg('{N}は じいちゃんが のこした いえに すむため|この まちに もどってきた。');
+    E.sfx('rev');
+    await E.move('bus', 'D6', { speed: 1.2, force: true });
+    E.remove('bus');
+    E.bgm('town');
+    await E.say('{N}', '...ひさしぶりの キリハラだ。');
+    E.spawn({ id: 'mio', x: 31, y: 33, dir: 'down', look: 'mio' });
+    await E.move('mio', 'D7', { speed: 2.2 });
+    await E.emote('mio', '!');
+    await E.say('ミオ', '{N}! やっぱり {N}だ! おかえり!');
+    await E.say('ミオ', 'おぼえてる? ミオだよ。|こどもの ころ よく いっしょに あそんだ でしょ。');
+    await E.say('{N}', 'ミオ! ひさしぶり。');
+    await E.say('ミオ', 'テツさんが ガレージで まってるよ。|じいちゃんの くるまの ことで はなしが あるって。');
+    await E.say('ミオ', 'あたしは そこの ガソリンスタンドで バイト してるの。|こまったら いつでも きてね!');
+    E.setFlag('met_mio');
+    await E.move('mio', 'U9', { speed: 2.2 });
+    E.remove('mio');
+    await E.letterbox(false);
+    E.goal('ガレージに いこう');
+  }
+
+  async function kenta(E) {
+    if (!E.flag('got_car')) {
+      await E.say('ケンタ', 'なんだよ。くるまも もってない やつに|ようは ないね。');
+      return;
+    }
+    if (!E.flag('kenta_met')) {
+      E.setFlag('kenta_met');
+      await E.emote('kenta', '!');
+      await E.say('ケンタ', 'あ! おまえ ゲンゾウじいさんの まごだろ。|コメットを うけついだって もう うわさに なってるぜ。');
+      await E.say('ケンタ', 'おれは ケンタ。この へんじゃ いちばん はやいんだ。');
+      await E.say('ケンタ', 'ちょうどいい。うらやまの さかで しょうぶ しようぜ。|まけたら 1000えん な!');
+    } else {
+      await E.say('ケンタ', E.flag('kenta_lost') ? 'なんだ、また まけに きたのか?' : 'どうした? にげるのかと おもったぜ。');
+    }
+    var c = await E.ask('ケンタ', 'うらやまざかで しょうぶ だ!', ['うける', 'やめておく']);
+    if (c !== 0) { await E.say('ケンタ', 'へっ、こしぬけ!'); return; }
+    if (E.money < 1000) { await E.say('ケンタ', 'かけきんの 1000えんも ないのかよ。|バイトでも して でなおしな。'); return; }
+    await E.say('ケンタ', 'ついてこい!');
+    var r = await E.race('kenta1');
+    if (r.win) {
+      await E.say('ケンタ', 'う、うそだろ...|コメットに まけるなんて...');
+      await E.say('ケンタ', '...ちぇっ、やるじゃん。|これ やるよ。はじめて かった きねんに な。');
+      await E.giveFurniture('trophy_kenta');
+      await E.say('ケンタ', 'とうげに いくなら ツヅラの サキさんに きを つけな。|ヘアピンが とにかく はやいんだ。');
+      await E.say('ケンタ', 'ツヅラとうげは まちの きたから とうげみちを|のぼった さき だよ。');
+      await E.chapter(1, 'ツヅラの ヘアピン');
+      E.bgm('town');
+      E.goal('ツヅラとうげの サキに かつ');
+      E.reload();
+    } else {
+      E.setFlag('kenta_lost');
+      if (r.retire) await E.say('ケンタ', 'とちゅうで やめるなんて なさけないぜ!');
+      await E.say('ケンタ', 'へへっ、いただき!|コメットが ないてるぜ。');
+      E.goal('ケンタに リベンジ しよう');
+    }
+  }
+
+  RR.Maps.layer('town', 'ch0', {
+    when: function (S) { return S.stage === 0; },
+    build: function (M) {
+      M.prop('car', 33, 20, { model: 'tsubame', color: 'orange', dir: 'h' });
+    },
+    npcs: [
+      { id: 'kenta', x: 35, y: 19, dir: 'down', look: 'kenta', talk: kenta },
+      { id: 'yan', x: 37, y: 19, dir: 'left', look: 'man2', talk: K.lines('わかもの', ['ケンタは この へんじゃ はやい ほう だぜ。', 'まちの わかい やつらは みんな とうげに あこがれてる。']) }
+    ],
+    events: [
+      { id: 'arrival', on: 'auto', once: true, when: function (S) { return !S.flags.intro; }, run: arrival },
+      {
+        x: 28, y: 1, w: 3, h: 2, on: 'step', when: function (S) { return !S.flags.got_car; }, run: async function (E) {
+          await E.say('{N}', '(この さきは とうげみち...|まずは ガレージに いかないと)');
+          await E.move('player', 'D2');
+        }
+      }
+    ]
+  });
+})();
