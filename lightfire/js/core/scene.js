@@ -112,4 +112,5 @@
     requestAnimationFrame(frame);
   };
   PF.stepOnce = function (n) { for (var i = 0; i < (n || 1); i++) step(); render(); }; // テスト用
+  PF.stepLogic = step; // テスト用（描画なし。tools/check_flow.js が使う）
 })();

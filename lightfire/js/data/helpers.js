@@ -6,6 +6,8 @@
   H.sign = function (x, y, text, id) { return { type: 'sign', id: id || ('sign_' + x + '_' + y), x: x, y: y, text: text }; };
   H.chest = function (id, x, y, item, n) { var o = { type: 'chest', id: id, x: x, y: y }; if (typeof item === 'number') o.gold = item; else { o.item = item; if (n) o.n = n; } return o; };
   H.warp = function (x, y, to, entry, sfx, w, h) { var o = { type: 'warp', x: x, y: y, to: to, entry: entry, sfx: sfx || 'stairs' }; if (w) o.w = w; if (h) o.h = h; return o; };
+  // 入れない家の扉。踏むと メッセージが出て 一歩 戻される（扉のタイルには かならず warp か これを置く: check_maps が検査）
+  H.shut = function (x, y, text) { return { type: 'trigger', x: x, y: y, shut: true, run: async function (g) { await g.deny(text, 'd'); } }; };
   H.light = function (id, x, y, r) { return { type: 'deco', id: id, x: x, y: y, light: r || 30, solid: false }; };
   H.block = function (id, x, y) { return { type: 'block', id: id, x: x, y: y }; };
   H.plate = function (id, x, y, group, blockOnly) { return { type: 'plate', id: id, x: x, y: y, group: group, blockOnly: !!blockOnly }; };

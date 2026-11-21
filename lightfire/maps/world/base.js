@@ -23,11 +23,12 @@
   m.path([[44, 36], [44, 18]], ',', 2);
   m.rect(26, 37, 2, 1, 'B');
   // 町
-  var ko = m.house(5, 33, 3, { roof: 'red' }); m.house(9, 33, 3, { roof: 'blue' });
-  var na = m.house(41, 32, 3, { roof: 'blue' }); m.house(45, 32, 3, { roof: 'red' });
-  var fu = m.house(22, 10, 3, { roof: 'blue' }); m.house(26, 10, 3, { roof: 'red' });
-  var kz = m.house(45, 14, 3, { roof: 'red' }); m.house(49, 14, 3, { roof: 'red' });
+  var ko = m.house(5, 33, 3, { roof: 'red' }), ko2 = m.house(9, 33, 3, { roof: 'blue' });
+  var na = m.house(41, 32, 3, { roof: 'blue' }), na2 = m.house(45, 32, 3, { roof: 'red' });
+  var fu = m.house(22, 10, 3, { roof: 'blue' }), fu2 = m.house(26, 10, 3, { roof: 'red' });
+  var kz = m.house(45, 14, 3, { roof: 'red' }), kz2 = m.house(49, 14, 3, { roof: 'red' });
   m.set(ko.frontX, ko.frontY, ','); m.set(na.frontX, na.frontY, ','); m.set(fu.frontX, fu.frontY, ','); m.set(kz.frontX, kz.frontY, ',');
+  [ko2, na2, fu2, kz2].forEach(function (b) { m.set(b.frontX, b.frontY, ','); });   // 2軒目の扉の前も あける（木が立つと入れない）
   m.path([[fu.frontX, fu.frontY], [fu.frontX, 14]], ',', 1);
   // 北の湖と塔
   m.rect(22, 5, 14, 5, 'i'); m.rect(22, 10, 14, 1, 'n');
@@ -49,6 +50,11 @@
       { type: 'warp', x: na.doorX, y: na.doorY, to: 'nagi', entry: 'world', sfx: 'door' },
       { type: 'warp', x: fu.doorX, y: fu.doorY, to: 'fubuki', entry: 'world', sfx: 'door' },
       { type: 'warp', x: kz.doorX, y: kz.doorY, to: 'kazan', entry: 'world', sfx: 'door' },
+      // 村は 家が2軒ならぶ。どちらの扉からも 同じ村に入る
+      { type: 'warp', x: ko2.doorX, y: ko2.doorY, to: 'kotori', entry: 'south', sfx: 'door' },
+      { type: 'warp', x: na2.doorX, y: na2.doorY, to: 'nagi', entry: 'world', sfx: 'door' },
+      { type: 'warp', x: fu2.doorX, y: fu2.doorY, to: 'fubuki', entry: 'world', sfx: 'door' },
+      { type: 'warp', x: kz2.doorX, y: kz2.doorY, to: 'kazan', entry: 'world', sfx: 'door' },
       { type: 'warp', x: tw.doorX, y: tw.doorY, to: 'tower_1', entry: 'door', sfx: 'stairs' },
       { type: 'trigger', x: 19, y: 21, w: 3, h: 1, cond: { lt: ['ch', 3] }, run: async function (g) { await g.deny('ふぶきで ゆきみちが みえない。\nいまは すすめそうに ない。', 'd'); } },
       { type: 'trigger', x: 44, y: 21, w: 3, h: 1, cond: { lt: ['ch', 4] }, run: async function (g) { await g.deny('あつい かぜが ふきあれて いる。\nいまは すすめそうに ない。', 'd'); } },

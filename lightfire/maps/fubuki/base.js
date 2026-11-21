@@ -8,6 +8,7 @@
   var shop = m.house(4, 5, 5, { roof: 'blue' }), eld = m.house(15, 5, 5, { roof: 'red' });
   var a = m.house(4, 13, 3, { roof: 'red' }), b = m.house(17, 13, 3, { roof: 'blue' });
   m.set(shop.frontX, shop.frontY, ':'); m.set(eld.frontX, eld.frontY, ':');
+  m.set(a.frontX, a.frontY, ':'); m.set(b.frontX, b.frontY, ':');   // 入れない家でも 扉の前までは 歩ける
   [[10, 8], [13, 8], [10, 16], [13, 16]].forEach(function (p) { m.set(p[0], p[1], 'l'); });
   m.rect(11, 18, 2, 2, ':');
   PF.maps.base('fubuki', {
@@ -16,6 +17,8 @@
     objects: [
       h.warp(11, 19, 'world', 'fubuki', 'door', 2, 1),
       h.warp(shop.doorX, shop.doorY, 'fubuki_shop', 'door', 'door'), h.warp(eld.doorX, eld.doorY, 'fubuki_house', 'door', 'door'),
+      h.shut(a.doorX, a.doorY, 'とびらが ゆきで こおりついている。\nひとの けはいは ない。'),
+      h.shut(b.doorX, b.doorY, 'とびらは しまっている。\nまどの あかりも きえている。'),
       h.warp(11, 1, 'icecave_a', 'door', 'stairs'),
       { type: 'iceblock', id: 'ice1', x: 11, y: 2, flag: 'f.ice1', when: { not: 'f.ice1' } },
       { type: 'iceblock', id: 'ice2', x: 11, y: 4, flag: 'f.ice2', when: { not: 'f.ice2' } },

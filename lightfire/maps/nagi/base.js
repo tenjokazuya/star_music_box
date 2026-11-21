@@ -27,6 +27,7 @@
       h.warp(shop.doorX, shop.doorY, 'nagi_shop', 'door', 'door'), h.warp(tav.doorX, tav.doorY, 'nagi_tavern', 'door', 'door'), h.warp(nami.doorX, nami.doorY, 'nagi_house', 'door', 'door'),
       { type: 'warp', x: lh.doorX, y: lh.doorY, to: 'lighthouse_1', entry: 'door', sfx: 'stairs', needs: { item: 'key2' },
         deny: async function (g) { await g.deny(['とうだいの とびらは かぎが かかっている。', 'かぎは だれかが あずかっている ようだ。'], 'd'); } },
+      h.shut(hut.doorX, hut.doorY, 'とびらは しまっている。\nたたいても へんじは ない。'),
       h.sign(9, 12, '↑ ナギの みなと\n→ さかばは ここの ひだり'),
       h.sign(24, 9, 'とうだいへ つづく さんばし\nあしもとに ちゅうい')
     ]
