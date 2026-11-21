@@ -49,9 +49,11 @@
       g.fillStyle = '#0c1030'; g.fillRect(0, 0, W, H); // 下半分も毎フレーム塗る（フラッシュ演出が残像に重なって赤くならないように）
       g.drawImage(PF.monsters.bg(S.bg), 0, 0);
       if (S.flashBg > 0) { g.fillStyle = 'rgba(255,255,255,' + S.flashBg * 0.4 + ')'; g.fillRect(0, 0, W, 96); S.flashBg -= 0.1; }
-      // 仲間のヒダネ
-      g.globalAlpha = 0.4; g.drawImage(PF.sprites.shadow, 22, 80); g.globalAlpha = 1;
-      g.drawImage(PF.sprites.ember[((S.t / 7) | 0) % 4], 22, 70 + Math.round(Math.sin(S.t / 9) * 2));
+      // 仲間のヒダネ（仲間になってから）
+      if (PF.field.hasEmber()) {
+        g.globalAlpha = 0.4; g.drawImage(PF.sprites.shadow, 22, 80); g.globalAlpha = 1;
+        g.drawImage(PF.sprites.ember[((S.t / 7) | 0) % 4], 22, 70 + Math.round(Math.sin(S.t / 9) * 2));
+      }
       S.enemies.forEach(drawEnemy.bind(null, g));
       S.fxs.forEach(function (f) { f.draw(g, f); });
       // 対象カーソル
@@ -103,7 +105,6 @@
       var counts = {}, order = [];
       alive.forEach(function (e) { if (!counts[e.name]) { counts[e.name] = 0; order.push(e.name); } counts[e.name]++; });
       order.forEach(function (nm, i) { U.text(g, nm + (counts[nm] > 1 ? '×' + counts[nm] : ''), 142, y0 + i * 12, C.text); });
-      if (S.input.type === 'cmd') U.text(g, S.hero.name + 'は どうする?', 12, 140, C.dim);
     }
   }
   function drawSub(g) {

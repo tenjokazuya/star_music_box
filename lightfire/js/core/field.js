@@ -48,7 +48,13 @@
     if (p.entry) { var e = map.entries[p.entry]; if (!e) throw new Error(id + ': entry "' + p.entry + '" なし'); p = { x: e.x, y: e.y, dir: e.dir }; }
     F.ents = []; F.zones = []; F.particles = []; F.puzzles = []; F.seq = {};
     map.objs.forEach(function (o) { F.addObj(o); });
-    map.puzzles.forEach(function (q) { F.puzzles.push({ def: q, done: q.flag ? !!PF.flag(q.flag) : false }); });
+    F.applyPitFills(map);
+    map.puzzles.forEach(function (q) {
+      var done = q.flag ? !!PF.flag(q.flag) : false;
+      // 穴の記録やボス撃破後の配置で、読み込み時にすでに解けている場合は 解決ずみとして扱う（会話を出さない）
+      if (!done && q.kind === 'fn') { try { if (q.check(F)) { done = true; if (q.flag) PF.setFlag(q.flag); } } catch (e) { } }
+      F.puzzles.push({ def: q, done: done });
+    });
     var pl = new Ent({ id: 'player', x: p.x, y: p.y, dir: p.dir || 'd' }, 'player');
     pl.solid = true; pl.sheet = G.human(HERO_LOOK); pl.onArrive = onPlayerArrive;
     F.player = pl; F.ents.push(pl);
@@ -159,7 +165,21 @@
   F.blockFall = function (b) {
     var lava = F.tile(b.x, b.y).lava;
     PF.sfx(lava ? 'fire_off' : 'fall'); F.spark(b.x * T + 8, b.y * T + 8, 10, lava ? '#ff8a30' : '#8a8aa0');
-    F.setTile(b.x, b.y, lava ? 'a' : '+'); F.remove(b); F.updatePuzzleState();
+    F.setTile(b.x, b.y, lava ? 'a' : '+');
+    // 埋めた穴は 部屋を出入りしても残す（どのブロックを使ったかも記録する）。
+    // 記録が無いと、穴を一つだけ埋めて通り抜けたあと戻れなくなる（ブロックが穴の向こう側で復元されるため）
+    PF.setFlag('pit.' + F.map.id + '.' + b.x + '_' + b.y, b.id || true);
+    F.remove(b); F.updatePuzzleState();
+  };
+  // 読み込み時: 記録された「埋めた穴」を床にし、使われたブロックを取り除く
+  F.applyPitFills = function (map) {
+    var pre = 'pit.' + map.id + '.', fl = PF.state.flags;
+    Object.keys(fl).forEach(function (k) {
+      if (k.indexOf(pre) !== 0 || !fl[k]) return;
+      var xy = k.slice(pre.length).split('_'), x = +xy[0], y = +xy[1], t = F.tile(x, y);
+      if (t.pit || t.lava) F.setTile(x, y, t.lava ? 'a' : '+');
+      if (typeof fl[k] === 'string') { var b = F.find(fl[k]); if (b && b.type === 'block') F.remove(b); }
+    });
   };
 
   /* ---- 到着処理 ---- */

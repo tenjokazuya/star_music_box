@@ -19,8 +19,11 @@
     return n;
   };
   // 解決済みパズルの部分: remove と gate(open) を返す
+  // いずれかのフラグが立っていれば真（解決ずみ ＋ そのダンジョンのボス撃破後）
+  H.anyFlag = function (flags) { return { any: flags.map(function (f) { return { flag: f }; }) }; };
+  // flag は 文字列 または 配列。ボス撃破後は「帰り道」のため パズルを解決ずみの状態で読み込む（戻れなくなる詰み防止）
   H.solvedPart = function (map, pid, flag, ids, gates, extra) {
-    var o = { when: { flag: flag }, remove: ids.concat(gates.map(function (g) { return g.id; })), objects: gates.map(function (g) { return { type: 'gate', id: g.id, x: g.x, y: g.y, open: true }; }) };
+    var o = { when: Array.isArray(flag) ? H.anyFlag(flag) : { flag: flag }, remove: ids.concat(gates.map(function (g) { return g.id; })), objects: gates.map(function (g) { return { type: 'gate', id: g.id, x: g.x, y: g.y, open: true }; }) };
     if (extra) for (var k in extra) o[k] = extra[k];
     PF.maps.part(map, pid, o);
   };

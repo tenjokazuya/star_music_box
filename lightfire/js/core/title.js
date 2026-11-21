@@ -132,11 +132,14 @@
   /* ---------- デモ（物語の紹介） ---------- */
   var SLIDES = [
     { kind: 'fire', text: 'むかし ゆきの ふかい むらに\nおおきな ひが あった。', len: 330 },
-    { kind: 'lamps', text: 'ひとびとは その ひから\nともしびを わけてもらい、\nさむい ふゆを こえてきた。', len: 420 },
+    { kind: 'lamps', text: 'ひとびとは その ひを ともしびに わけ、\nさむい ふゆを こえてきた。', len: 420 },
     { kind: 'out', text: 'ところが ある よる、\nおおきな ひは ふいに きえた。', len: 400 },
     { kind: 'dark', text: 'のこったのは\nちいさな ひだね ひとつ。', len: 360 },
     { kind: 'walk', text: 'ともしびを まもる ものが\nたびに でる。', len: 420 }
   ];
+  // 文字枠は最大2行（check_text.js が 行数と幅を検査する）
+  T.demoSlides = SLIDES;
+  var DEMO_BOX = { x: 12, y: 108, w: 216, h: 44, tx: 22, ty: 117, lh: 14 };
   var ds = null;
   var demoScene = {
     overlay: false,
@@ -180,9 +183,9 @@
       drawFlakes(g, tt, k === 'out' || k === 'dark');
       g.globalAlpha = 1;
       // テキスト
-      U.window(g, 12, 112 + 0, 216, 40, { alpha: 0.8 });
+      U.window(g, DEMO_BOX.x, DEMO_BOX.y, DEMO_BOX.w, DEMO_BOX.h, { alpha: 0.8 });
       var lines = s.text.slice(0, ds.shown).split('\n');
-      lines.forEach(function (ln, i) { U.text(g, ln, 22, 118 + i * 12, C.text); });
+      lines.forEach(function (ln, i) { U.text(g, ln, DEMO_BOX.tx, DEMO_BOX.ty + i * DEMO_BOX.lh, C.text); });
       if (ds.t % 90 < 60) F.draw(g, 'A: とばす', 190, 2, 'rgba(200,210,255,0.5)');
     }
   };

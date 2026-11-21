@@ -116,15 +116,17 @@
   };
 
   /* ---------- 画面中央のメッセージ（演出用） ---------- */
+  // text は \n で最大2行（1行は 224px まで）。長い文は 呼び出し側で \n を入れる（check_text.js が検査）
   U.banner = function (text, frames, col) {
     frames = frames || 90;
-    var t = 0;
+    var t = 0, lines = String(text).split('\n').slice(0, 2), bh = 26 + (lines.length - 1) * 14, by = 62 - (lines.length - 1) * 7;
     var m = {
       update: function () { t++; if (t > frames) PF.closeModal(m); },
       draw: function (g) {
         var a = Math.min(1, t / 12, (frames - t) / 12);
-        g.globalAlpha = Math.max(0, a) * 0.85; g.fillStyle = '#000'; g.fillRect(0, 62, PF.W, 26); g.globalAlpha = Math.max(0, a);
-        U.textC(g, text, 120, 72, col || C.hi); g.globalAlpha = 1;
+        g.globalAlpha = Math.max(0, a) * 0.85; g.fillStyle = '#000'; g.fillRect(0, by, PF.W, bh); g.globalAlpha = Math.max(0, a);
+        for (var i = 0; i < lines.length; i++) U.textC(g, lines[i], 120, by + 10 + i * 14, col || C.hi);
+        g.globalAlpha = 1;
       }
     };
     return PF.openModal(m);

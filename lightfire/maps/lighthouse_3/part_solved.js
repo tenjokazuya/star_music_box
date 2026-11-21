@@ -1,7 +1,7 @@
-/* lighthouse_3 / 解決ずみ */
+/* lighthouse_3 / 解決ずみ（またはボス撃破後＝帰り道） */
 (function () {
   'use strict';
-  PF.h.solvedPart('lighthouse_3', 'solved', 'c2.c_solved', ['umi', 'kaze', 'tsuki', 'hoshi'], [{ id: 'gate_s', x: 8, y: 1 }], {
+  PF.h.solvedPart('lighthouse_3', 'solved', ['c2.c_solved', 'c2.boss'], ['umi', 'kaze', 'tsuki', 'hoshi'], [{ id: 'gate_s', x: 8, y: 1 }], {
     objects: [
       { type: 'gate', id: 'gate_s', x: 8, y: 1, open: true },
       { type: 'brazier', id: 'umi', x: 3, y: 3, lit: true }, { type: 'brazier', id: 'kaze', x: 12, y: 3, lit: true },

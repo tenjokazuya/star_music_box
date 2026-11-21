@@ -42,9 +42,9 @@
     await g.say(['ひとりじゃ ない。', '…ともしびの なかから、そんな こえが きこえた きがした。']);
     g.sfx('magic');
     g.dark(0.15);
-    await g.banner('ランプの ひが ゆれる。ほらあなの ひ。とうだいの ひ。', 120, '#ffe070');
+    await g.banner('ランプの ひが ゆれる。\nほらあなの ひ。とうだいの ひ。', 120, '#ffe070');
     g.flash('#ffffff');
-    await g.banner('こおりの ほこらの ひ。かざんの いずみの ひ。', 120, '#ffe070');
+    await g.banner('こおりの ほこらの ひ。\nかざんの いずみの ひ。', 120, '#ffe070');
     g.flash('#ffffff');
     await g.banner('ぜんぶが ひとつに つながって かがやいた。', 120, '#ffe070');
     await g.say(['……これが ともしび。', 'ひとりで まもる ものでは なかったのか。'], K);
@@ -65,7 +65,7 @@
     await g.banner('とおく、みなとの とうだいが かがやいた。', 110, '#ffffff');
     await g.banner('ふぶきの さとの ほこらが かがやいた。', 110, '#ffffff');
     await g.banner('ほのおの さとの いずみが かがやいた。', 110, '#ffffff');
-    await g.banner('そして、コトリむらの おおびが あかあかと もえあがった。', 130, '#ffe070');
+    await g.banner('そして、コトリむらの おおびが\nあかあかと もえあがった。', 130, '#ffe070');
     await g.warp('kotori', { entry: 'shrine' }, 'warp');
   }
 })();
