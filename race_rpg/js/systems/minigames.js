@@ -1,4 +1,4 @@
-/* バイトのミニゲーム: せんしゃ（ガソリンスタンド）/ ナットしめ（ガレージ）/ もりつけ（ラーメン屋）
+/* バイトのミニゲーム: せんしゃ（ガソリンスタンド）/ ナットしめ（ガレージ）/ もりつけ（ラーメン屋）/ しなだし（コンビニ）/ コーヒー（カフェ）
  * RR.Minigames.run(id) → {score, pay}（お金はここで加算する）
  */
 (function () {
@@ -9,7 +9,9 @@
   var INFO = {
     wash: { title: 'せんしゃ', rule: 'じゅうじキーで スポンジを うごかし|Aを おしている あいだ よごれが おちる。|じかん いっぱい ピカピカに しよう!' },
     nut: { title: 'ナットしめ', rule: 'ひょうじ された ボタンを すばやく おせ!|まちがえると やりなおし。|4ほんの タイヤを はやく こうかん しよう。' },
-    ramen: { title: 'もりつけ', rule: 'ちゅうもんを おぼえて その じゅんばんに|◀▶で えらんで Aで のせる。Bで やりなおし。|たくさん だして おきゃくを まんぞく させよう。' }
+    ramen: { title: 'もりつけ', rule: 'ちゅうもんを おぼえて その じゅんばんに|◀▶で えらんで Aで のせる。Bで やりなおし。|たくさん だして おきゃくを まんぞく させよう。' },
+    konbini: { title: 'しなだし', rule: 'ながれてくる しょうひんを|◀▶で たなを えらび Aで ならべる。|たまりすぎると おちて しまうよ!' },
+    cafe: { title: 'コーヒー', rule: 'うごく めじるしが みどりの ところに|きた ときに Aで おゆを そそぐ。|3かい そそいだら 1ぱい できあがり!' }
   };
 
   MG.run = function (id) {
@@ -348,11 +350,168 @@
       F.draw(g, s.served + ' はい', 4, 4, '#f8e060');
     },
     result: function (s) {
-      var pay = s.served * 300 - s.miss * 50;
+      var pay = s.served * 400 - s.miss * 50; // 1はい 400（洗車 1だい 450 と同じくらい）
       pay = Math.max(200, pay);
       var rank = s.served >= 10 ? 'S' : s.served >= 7 ? 'A' : s.served >= 4 ? 'B' : 'C';
       return { pay: pay, rank: rank };
     },
     scoreText: function (s) { return 'だした ラーメン ' + s.served + ' はい'; }
   };
+
+  // ---------- しなだし（コンビニ） ----------
+  var GOODS = [
+    { name: 'のみもの', c: '#3878d8', c2: '#a8d0f8' },
+    { name: 'おにぎり', c: '#f0f0f0', c2: '#203828' },
+    { name: 'パン', c: '#d8a050', c2: '#f8d898' },
+    { name: 'おかし', c: '#e85878', c2: '#f8e060' }
+  ];
+  function goodIcon(g, k, x, y) {
+    var it = GOODS[k];
+    g.fillStyle = '#101018';
+    if (k === 0) {
+      g.fillRect(x + 3, y - 1, 8, 16);
+      g.fillStyle = it.c; g.fillRect(x + 4, y + 3, 6, 11);
+      g.fillStyle = it.c2; g.fillRect(x + 5, y, 4, 3); g.fillRect(x + 4, y + 6, 6, 3);
+    } else if (k === 1) {
+      for (var r = 0; r < 12; r++) {
+        var w = 2 + r;
+        g.fillStyle = '#101018'; g.fillRect(x + 7 - (w >> 1) - 1, y + r + 1, w + 2, 1);
+        g.fillStyle = it.c; g.fillRect(x + 7 - (w >> 1), y + r + 1, w, 1);
+      }
+      g.fillStyle = it.c2; g.fillRect(x + 3, y + 9, 9, 4);
+    } else if (k === 2) {
+      g.fillRect(x, y + 3, 15, 10);
+      g.fillStyle = it.c; g.fillRect(x + 1, y + 4, 13, 8);
+      g.fillStyle = it.c2; g.fillRect(x + 2, y + 4, 11, 3);
+    } else {
+      g.fillRect(x + 1, y, 13, 15);
+      g.fillStyle = it.c; g.fillRect(x + 2, y + 1, 11, 13);
+      g.fillStyle = it.c2; g.fillRect(x + 4, y + 5, 7, 4);
+      g.fillStyle = '#f8f8f8'; g.fillRect(x + 2, y + 1, 11, 2);
+    }
+  }
+  function boxG(g) { return { rect: function (x, y, w, h, col) { g.fillStyle = col; g.fillRect(x, y, w, h); } }; }
+  GAMES.konbini = {
+    limit: 45,
+    init: function (s) { s.placed = 0; s.miss = 0; s.combo = 0; s.best = 0; s.col = 0; s.queue = [this.pick()]; s.nextT = 70; s.drops = []; },
+    pick: function () { return Math.floor(Math.random() * GOODS.length); },
+    update: function (s) {
+      // しょうひんは一定の間かくで ながれてくる（だんだん はやく）。4こを こえると おちる
+      if (--s.nextT <= 0) {
+        s.nextT = Math.max(46, 84 - s.placed * 1.3);
+        s.queue.push(this.pick());
+        if (s.queue.length > 4) { s.queue.shift(); s.miss++; s.combo = 0; RR.Audio.sfx('wrong'); UI.toast('しょうひんが おちた!', '#f8a0a0'); }
+      }
+      if (In.repeat('left')) { s.col = (s.col + 3) % 4; RR.Audio.sfx('cursor'); }
+      if (In.repeat('right')) { s.col = (s.col + 1) % 4; RR.Audio.sfx('cursor'); }
+      if (In.pressed('a') && s.queue.length) {
+        var k = s.queue.shift();
+        var ok = k === s.col;
+        s.drops.push({ k: k, col: s.col, t: 0, ok: ok });
+        if (ok) {
+          s.placed++; s.combo++; s.best = Math.max(s.best, s.combo);
+          RR.Audio.sfx('place');
+          if (s.combo % 10 === 0) { RR.Audio.sfx('correct'); UI.toast(s.combo + ' れんぞく!', '#a0f8c0'); }
+        } else { s.miss++; s.combo = 0; RR.Audio.sfx('wrong'); }
+        s.score = s.placed;
+      }
+      s.drops = s.drops.filter(function (d) { d.t++; return d.t < 14; });
+    },
+    draw: function (g, s) {
+      for (var y = 0; y < 160; y += 16) for (var x = 0; x < 240; x += 16) { g.fillStyle = ((x + y) >> 4) & 1 ? '#d8dce8' : '#b8bcc8'; g.fillRect(x, y, 16, 16); }
+      // ながれてくる しょうひん（いちばん ひだりが いま ならべる もの）
+      UI.win(g, 30, 8, 180, 34, 'blue');
+      F.draw(g, 'つぎ', 36, 12, '#f8e060');
+      for (var i = 0; i < s.queue.length; i++) {
+        var qx = 70 + i * 34, qy = 18;
+        if (i === 0) { g.fillStyle = '#f8e060'; g.fillRect(qx - 4, qy - 4, 23, 23); g.fillStyle = '#283058'; g.fillRect(qx - 3, qy - 3, 21, 21); }
+        goodIcon(g, s.queue[i], qx, qy);
+      }
+      if (s.queue.length >= 4 && (RR.Game.frame >> 3) & 1) F.draw(g, 'いっぱい!', 206, 30, '#f86858', { align: 'right' });
+      // たな
+      for (var c = 0; c < 4; c++) {
+        var sx = 16 + c * 54;
+        RR.Props.box(boxG(g), sx, 92, 46, 56, '#a07850', 4);
+        g.fillStyle = '#e8e0d0'; g.fillRect(sx + 4, 100, 38, 40);
+        goodIcon(g, c, sx + 16, 106);
+        F.draw(g, GOODS[c].name, sx + 23, 126, '#382810', { align: 'center', shadow: null });
+        if (c === s.col) {
+          F.draw(g, '▼', sx + 19, 78 + ((RR.Game.frame >> 3) & 1), '#e83838', { shadow: null });
+          g.fillStyle = '#e83838'; g.fillRect(sx, 90, 46, 2);
+        }
+      }
+      s.drops.forEach(function (d) {
+        var p = d.t / 14, tx = 16 + d.col * 54 + 16;
+        goodIcon(g, d.k, Math.round(U.lerp(70, tx, p)), Math.round(U.lerp(20, d.ok ? 106 : 150, p)));
+        if (!d.ok) F.draw(g, '×', tx + 4, 70, '#e83838');
+      });
+      F.draw(g, 'ならべた ' + s.placed, 4, 46, '#202028', { shadow: null });
+      F.draw(g, 'れんぞく ' + s.combo, 4, 58, '#3858a0', { shadow: null });
+    },
+    result: function (s) {
+      var pay = Math.max(200, s.placed * 55 + 200 - s.miss * 30);
+      var rank = s.placed >= 34 ? 'S' : s.placed >= 26 ? 'A' : s.placed >= 16 ? 'B' : 'C';
+      return { pay: pay, rank: rank };
+    },
+    scoreText: function (s) { return 'ならべた しょうひん ' + s.placed + ' こ'; }
+  };
+
+  // ---------- コーヒー（カフェ） ----------
+  GAMES.cafe = {
+    limit: 45,
+    init: function (s) { s.cups = 0; s.perfect = 0; s.miss = 0; s.pos = 0; s.dir = 1; s.flash = 0; this.newCup(s); },
+    newCup: function (s) { s.pour = 0; s.zw = Math.max(14, 36 - s.cups * 2); s.speed = Math.min(5, 2.2 + s.cups * 0.25); this.moveZone(s); s.serveT = 0; },
+    moveZone: function (s) { s.zone = 8 + Math.floor(Math.random() * (152 - s.zw)); },
+    update: function (s) {
+      if (s.flash > 0) s.flash--;
+      if (s.serveT > 0) { if (--s.serveT === 0) this.newCup(s); return; }
+      s.pos += s.dir * s.speed;
+      if (s.pos >= 160) { s.pos = 160; s.dir = -1; } else if (s.pos <= 0) { s.pos = 0; s.dir = 1; }
+      if (In.pressed('a')) {
+        if (s.pos >= s.zone && s.pos <= s.zone + s.zw) {
+          s.pour++;
+          s.flash = 10;
+          var perfect = Math.abs(s.pos - (s.zone + s.zw / 2)) < 3;
+          if (perfect) { s.perfect++; RR.Audio.sfx('correct'); } else RR.Audio.sfx('drink');
+          if (s.pour >= 3) { s.cups++; s.score = s.cups; s.serveT = 70; RR.Audio.sfx('get'); UI.toast('おまたせ しました! ' + s.cups + 'はいめ', '#a0f8c0'); }
+          else this.moveZone(s);
+        } else {
+          s.miss++; RR.Audio.sfx('wrong'); UI.toast('こぼれた!', '#f8a0a0');
+          s.pour = Math.max(0, s.pour - 1);
+        }
+      }
+    },
+    draw: function (g, s) {
+      for (var y = 0; y < 96; y += 8) { g.fillStyle = (y >> 3) & 1 ? '#684430' : '#583828'; g.fillRect(0, y, 240, 8); }
+      g.fillStyle = '#8c5c34'; g.fillRect(0, 96, 240, 64); g.fillStyle = '#a87040'; g.fillRect(0, 96, 240, 3);
+      // ケトル
+      var pouring = s.flash > 0;
+      g.fillStyle = '#202028'; g.fillRect(132, 18, 34, 24); g.fillStyle = '#b8bcc8'; g.fillRect(133, 19, 32, 22); g.fillStyle = '#e8ecf4'; g.fillRect(135, 21, 10, 3);
+      g.fillStyle = '#909498'; g.fillRect(122, pouring ? 34 : 30, 12, 3); g.fillRect(118, pouring ? 37 : 33, 5, 3);
+      if (pouring) { g.fillStyle = '#c0a070'; g.fillRect(119, 40, 2, 22); }
+      // カップ
+      g.fillStyle = '#101018'; g.fillRect(101, 59, 36, 32);
+      g.fillStyle = '#f0f0f0'; g.fillRect(102, 60, 34, 30); g.fillStyle = '#d0d0d8'; g.fillRect(130, 60, 6, 30);
+      g.fillStyle = '#101018'; g.fillRect(137, 66, 7, 14); g.fillStyle = '#f0f0f0'; g.fillRect(137, 68, 5, 10); g.fillStyle = '#8c5c34'; g.fillRect(138, 70, 3, 6);
+      var lv = s.serveT > 0 ? 3 : s.pour;
+      if (lv > 0) { var h = lv * 8; g.fillStyle = '#4c2c18'; g.fillRect(104, 88 - h, 26, h); g.fillStyle = '#7c4c28'; g.fillRect(104, 88 - h, 26, 2); }
+      if (s.serveT > 0) for (var k = 0; k < 3; k++) { g.fillStyle = 'rgba(255,255,255,0.5)'; g.fillRect(108 + k * 8, 50 - ((RR.Game.frame + k * 5) % 14), 2, 6); }
+      // ゲージ（みどりが そそぐ タイミング、まんなかで ぴったり）
+      var gx = 40, gy = 112;
+      UI.win(g, gx - 8, gy - 6, 176, 24, 'dark');
+      g.fillStyle = '#303848'; g.fillRect(gx, gy + 2, 160, 6);
+      g.fillStyle = '#48c858'; g.fillRect(gx + Math.round(s.zone), gy + 2, Math.round(s.zw), 6);
+      g.fillStyle = '#a8f8b0'; g.fillRect(gx + Math.round(s.zone + s.zw / 2) - 1, gy + 2, 2, 6);
+      g.fillStyle = '#f8e060'; g.fillRect(gx + Math.round(s.pos) - 1, gy - 2, 3, 14);
+      F.draw(g, 'そそぐ ' + ['○○○', '●○○', '●●○', '●●●'][Math.min(3, lv)], 120, 140, '#f8f8f8', { align: 'center' });
+      F.draw(g, s.cups + ' はい', 4, 4, '#f8e060');
+    },
+    result: function (s) {
+      var pay = Math.max(200, s.cups * 200 + s.perfect * 10 + 100 - s.miss * 20);
+      var rank = s.cups >= 11 ? 'S' : s.cups >= 8 ? 'A' : s.cups >= 4 ? 'B' : 'C';
+      return { pay: pay, rank: rank };
+    },
+    scoreText: function (s) { return 'いれた コーヒー ' + s.cups + ' はい'; }
+  };
+
 })();

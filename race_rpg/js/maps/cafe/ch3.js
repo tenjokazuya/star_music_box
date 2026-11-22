@@ -5,7 +5,7 @@
   RR.Maps.layer('cafe', 'ch3', {
     when: function (S) { return S.stage === 3; },
     npcs: [{
-      id: 'shinobu', x: 3, y: 6, dir: 'left', look: 'shinobu',
+      id: 'shinobu', x: 4, y: 4, dir: 'left', look: 'shinobu',
       talk: async function (E) {
         if (!E.flag('shinobu_met')) {
           E.setFlag('shinobu_met');
@@ -25,6 +25,6 @@
   });
   RR.Maps.layer('cafe', 'post', {
     when: function (S) { return S.stage >= 5 && S.flags.shinobu_quest; },
-    npcs: [{ id: 'shinobu', x: 3, y: 6, dir: 'left', look: 'shinobu', talk: RR.MapKit.random('シノブ', ['...ここの コーヒーは ゲンゾウさんも すきだった らしい。', '...きりの ない よるも わるくない。']) }]
+    npcs: [{ id: 'shinobu', x: 4, y: 4, dir: 'left', look: 'shinobu', talk: RR.MapKit.random('シノブ', ['...ここの コーヒーは ゲンゾウさんも すきだった らしい。', '...きりの ない よるも わるくない。']) }]
   });
 })();

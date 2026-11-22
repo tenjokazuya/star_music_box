@@ -174,7 +174,7 @@
       // ---- システム ----
       race: function (id, opt) { return RR.Race.run(id, opt); },
       shop: function (id) { return RR.Shop.open(id); },
-      food: function (id) { return RR.Shop.food(id); },
+      food: function (id, opt) { return RR.Shop.food(id, opt); },
       garage: function () { return RR.Garage.open(); },
       dealer: function () { return RR.Shop.dealer(); },
       minigame: function (id) { return RR.Minigames.run(id); },

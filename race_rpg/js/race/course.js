@@ -7,6 +7,8 @@
   var Course = RR.Course = { cache: {} };
   var PPM = Course.PPM = 4;      // テクスチャ解像度 px/m
   var DS = 0.5;                  // 中心線サンプル間隔 m
+  Course.LEAD = 40;              // スタート手前の道 m
+  Course.RUNOFF = 160;           // ゴール後の道 m
 
   // ---------- パレット番号 ----------
   var I = Course.IDX = {
@@ -48,7 +50,10 @@
       pts.push({ x: x, y: y, psi: psi, k: k, s: s, side: side });
     }
     push(0, valleyDef);
-    def.segs.forEach(function (sg) {
+    // スタートの手前とゴールの先にも道を続ける（ゴール直後に道が途切れないように）
+    var LEAD = Course.LEAD, RUNOFF = Course.RUNOFF, raceEnd = 0;
+    [['S', LEAD]].concat(def.segs, [['END'], ['S', RUNOFF]]).forEach(function (sg) {
+      if (sg[0] === 'END') { raceEnd = s; return; }
       var t = sg[0];
       if (t === 'S') {
         var n = Math.max(1, Math.round(sg[1] / DS));
@@ -88,7 +93,7 @@
     var c = {
       id: id, def: def, pts: pts, ks: ks, len: s, width: def.width || 7,
       W: Math.ceil((maxX - minX + M * 2)), H: Math.ceil((maxY - minY + M * 2)),
-      startS: 12, finishS: s - 15, grade: def.grade || 0, fog: def.fog || 0,
+      startS: LEAD + 12, finishS: raceEnd - 15, grade: def.grade || 0, fog: def.fog || 0,
       pal: PALS[def.pal || 'forest'] || PALS.forest
     };
     rasterize(c);
@@ -243,7 +248,7 @@
     banner(c, c.finishS + 3);
     // 街灯（スタート・ゴール付近と所々）: 画面空間で光を足すので位置だけ持つ
     var lamps = [c.startS - 4, c.startS + 20, c.finishS - 10, c.finishS + 6];
-    (c.def.lamps || []).forEach(function (s) { lamps.push(s); });
+    (c.def.lamps || []).forEach(function (s) { lamps.push(s + Course.LEAD); });
     c.lamps = [];
     lamps.forEach(function (ls, n) {
       var p = Course.at(c, U.clamp(ls, 0, c.len));

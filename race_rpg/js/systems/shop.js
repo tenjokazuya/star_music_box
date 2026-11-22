@@ -131,11 +131,11 @@
   }
 
   // ---------- 飲食 ----------
-  Shop.food = function (id) {
+  Shop.food = function (id, opt) {
     var shop = D.foodShops[id];
     var items = shop.items.map(function (it) { return { label: it.name, right: '¥' + U.money(it.price), it: it }; });
     items.push({ label: 'やめる' });
-    var pre = shop.greet ? UI.say(shop.clerk, shop.greet) : Promise.resolve();
+    var pre = shop.greet && !(opt && opt.noGreet) ? UI.say(shop.clerk, shop.greet) : Promise.resolve();
     var loop = function (sel) {
       return UI.menu({ title: shop.name, items: items, x: 8, y: 4, w: 170, rows: 7, sel: sel, drawExtra: function (g) { UI.moneyBox(g, null, 4); } }).then(function (i) {
         if (i < 0 || !items[i].it) return;

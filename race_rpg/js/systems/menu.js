@@ -117,7 +117,7 @@
           row('プレイじかん', RR.State.playtimeText(S.playtime));
           row('レース', S.stats.races + ' せん ' + S.stats.wins + ' しょう');
           row('かせいだ おかね', '¥' + U.money(S.stats.earned));
-          row('バイト', ((S.stats.jobs.wash || 0) + (S.stats.jobs.nut || 0) + (S.stats.jobs.ramen || 0)) + ' かい');
+          row('バイト', ['wash', 'nut', 'ramen', 'konbini', 'cafe'].reduce(function (n, k) { return n + (S.stats.jobs[k] || 0); }, 0) + ' かい');
           var beaten = ['kenta', 'saki', 'gou', 'shinobu', 'kurosawa', 'hayami'].filter(function (k) { return S.records[k] && S.records[k].w > 0; });
           row('たおした かしら', beaten.length ? beaten.map(function (k) { return D.rivals[k].name; }).join(' ') : '-');
           var tro = Object.keys(S.furniture.owned).filter(function (k) { return /^trophy/.test(k); }).length;

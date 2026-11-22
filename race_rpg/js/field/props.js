@@ -166,24 +166,24 @@
       }
       // 最上段は手前に（キャラが建物の裏に回った時に隠れる）
       hi.g.drawImage(lo.g.canvas, px, py, w, TS, px, py, w, TS);
-      // 看板
-      if (o.sign) {
-        var tw = F.measure(o.sign) + 8;
-        var sxp = px + Math.round((w - tw) / 2), syp = wy - 6;
-        if (o.signX != null) sxp = px + o.signX;
-        var sc = o.signC || '#c83830';
-        var sr = P.ramp(sc);
-        lo.rect(sxp - 1, syp - 1, tw + 2, 13, '#181020');
-        lo.rect(sxp, syp, tw, 11, sr.base); lo.rect(sxp, syp, tw, 1, sr.hi); lo.rect(sxp, syp + 10, tw, 1, sr.dk);
-        F.draw(lo.g, o.sign, sxp + 4, syp + 1, o.signT || '#f8f8f8', { shadow: sr.dk });
-      }
-      // ひさし
+      // ひさし（看板より先に描く。看板が ひさしに 隠れないように）
       if (o.awning) {
         var ac = P.ramp(o.awning);
         var ax = px + 2, ay = wy + 1, aw = w - 4;
         for (var i = 0; i < aw; i++) lo.rect(ax + i, ay, 1, 5, ((i >> 2) & 1) ? '#f0f0f0' : ac.base);
         lo.rect(ax, ay + 5, aw, 1, ac.dk);
         for (i = 0; i < aw; i += 4) lo.rect(ax + i, ay + 5, 2, 1, ac.sh);
+      }
+      // 看板（ひさしがある店は ひさしの上、軒先に掛ける）
+      if (o.sign) {
+        var tw = F.measure(o.sign) + 8;
+        var sxp = px + Math.round((w - tw) / 2), syp = o.awning ? wy - 12 : wy - 6;
+        if (o.signX != null) sxp = px + o.signX;
+        var sc = o.signC || '#c83830';
+        var sr = P.ramp(sc);
+        lo.rect(sxp - 1, syp - 1, tw + 2, 13, '#181020');
+        lo.rect(sxp, syp, tw, 11, sr.base); lo.rect(sxp, syp, tw, 1, sr.hi); lo.rect(sxp, syp + 10, tw, 1, sr.dk);
+        F.draw(lo.g, o.sign, sxp + 4, syp + 1, o.signT || '#f8f8f8', { shadow: sr.dk });
       }
     },
     lights: function (o, px, py) {

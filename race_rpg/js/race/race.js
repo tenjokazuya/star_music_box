@@ -90,7 +90,8 @@
 
     update: function (dt) {
       this.t++;
-      if (RR.UI.busy()) return;
+      if (RR.UI.busy()) { this.quietEngines(); return; } // ポーズ中はアイドリングの音だけにする
+      this.muted = false;
       var self = this;
       // デモは何か押すか一定時間で終了
       if (this.cfg.demo && !this.demoEnd && ((this.state !== 'intro' && In.anyPressed()) || (this.state === 'run' && this.time > 32) || this.state === 'goal')) {
@@ -155,7 +156,7 @@
       this.sound();
       this.camera(dt);
       this.checkFinish();
-      if (this.state === 'goal' && this.t > 150) { this.state = 'result'; this.t = 0; }
+      if (this.state === 'goal' && this.t > 150) { this.state = 'result'; this.t = 0; this.stopEngines(); }
       if (this.msgT > 0) this.msgT--;
     },
 
@@ -168,6 +169,8 @@
       this.stIn = U.approach(this.stIn, st, rate);
     },
     rubberBand: function () {
+      // ゴール後は ゆっくり 速度を落とす
+      if (this.state !== 'run') { this.rival.ai.pace = Math.max(0.45, this.rival.ai.pace - 0.004); return; }
       var gap = this.rival.car.s - this.player.s; // 正=相手が前
       var p = 1;
       if (gap > 30) p = 1 - Math.min(0.05, (gap - 30) / 2000);
@@ -179,8 +182,20 @@
       if (this.rival) this.reng = RR.Audio.engine(0.5, 0.3);
       RR.Audio.sfx('starter');
     },
+    stopEngines: function () {
+      if (this.eng) this.eng.stop();
+      if (this.reng) this.reng.stop();
+      this.eng = this.reng = null;
+    },
+    quietEngines: function () {
+      if (this.muted) return;
+      this.muted = true;
+      if (this.eng) { this.eng.setVol(0.4); this.eng.update(this.player.sp.idle, 0, 0, 0, 0); }
+      if (this.reng) { this.reng.setVol(0); this.reng.update(900, 0, 0, 0, 0); }
+    },
     sound: function () {
       var p = this.player;
+      if (this.eng) this.eng.setVol(1);
       if (this.eng) this.eng.update(p.rpm, p.thr, p.slipTotal * (p.u > 3 ? 1 : 0), p.speed(), p.boost * (p.sp.turbo > 0 ? 1 : 0));
       if (this.reng && this.rival) {
         var rc = this.rival.car;
@@ -267,6 +282,8 @@
       this.finishTime = this.time;
       this.autopilot = new RR.AI(this.player, this.course, { skill: 0.5 });
       this.autopilot.started = true;
+      this.autopilot.pace = 0.6;
+      if (retire) this.stopEngines();
       RR.Audio.stopBgm(0.6);
       if (!retire) {
         RR.FX.flash(10, this.win ? '#fff8d0' : '#ff4040');
@@ -349,7 +366,7 @@
       }
       // 下部: コース情報
       g.fillStyle = '#000'; g.fillRect(0, 142, 240, 18);
-      var info = c.def.name + '  ' + c.def.kind + ' ' + (Math.round(c.len / 100) / 10) + 'KM';
+      var info = c.def.name + '  ' + c.def.kind + ' ' + (Math.round((c.finishS - c.startS) / 100) / 10) + 'KM';
       F.draw(g, info, 6, 146, '#f8f8f8');
       var stake = cfg.stake ? 'かけきん ¥' + U.money(cfg.stake) : (cfg.prize ? 'しょうきん ¥' + U.money(cfg.prize) : '');
       F.draw(g, stake, 234, 146, '#f8e060', { align: 'right' });
