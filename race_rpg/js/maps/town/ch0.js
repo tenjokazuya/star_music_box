@@ -35,12 +35,22 @@
     await E.say('ミオ', 'おぼえてる? ミオだよ。|こどもの ころ よく いっしょに あそんだ でしょ。');
     await E.say('{N}', 'ミオ! ひさしぶり。');
     await E.say('ミオ', 'テツさんが ガレージで まってるよ。|じいちゃんの くるまの ことで はなしが あるって。');
-    await E.say('ミオ', 'あたしは そこの ガソリンスタンドで バイト してるの。|こまったら いつでも きてね!');
+    await E.say('ミオ', 'ひさしぶりで みちも わすれてる でしょ?|ついてきて!');
     E.setFlag('met_mio');
-    await E.move('mio', 'U9', { speed: 2.2 });
-    E.remove('mio');
+    E.S.flags.goal = 'ガレージに いこう';
+    // ミオが先導し、主人公は1歩うしろを ついていく（バス停 → 住宅地の通り → ガレージの前）
+    await Promise.all([
+      E.move('mio', 'U7L15U1', { speed: 1.6 }),
+      E.move('player', 'U8L14', { speed: 1.6 })
+    ]);
+    E.face('mio', 'player');
+    E.face('player', 'up');
+    await E.say('ミオ', 'ここが じいちゃんの ガレージ。|テツさんは なかに いるよ。');
+    await E.say('ミオ', 'あたしは そこの ガソリンスタンドで バイト してるの。|こまったら いつでも きてね!');
+    E.move('mio', 'D1R14', { speed: 1.6 });
+    await E.move('player', 'U1');
     await E.letterbox(false);
-    E.goal('ガレージに いこう');
+    await E.warp('garage', 'door', 0, 'up', true);
   }
 
   async function kenta(E) {

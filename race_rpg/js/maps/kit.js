@@ -44,7 +44,10 @@
       if (c !== 0) { await E.say(name, o.no || 'いつでも こいよ。'); return; }
       if (E.money < stake) { await E.say(name, 'かけきんが たりない みたいだな。'); return; }
       var r = await E.race(raceId);
-      if (r.win) await E.say(name, o.win || 'くっ... まけたよ。');
+      if (r.win) {
+        await E.say(name, o.win || 'くっ... まけたよ。');
+        if (race.rival && RR.Story) await RR.Story.afterFreeWin(E, race.rival);
+      }
       else if (r.retire) await E.say(name, 'なんだ、やめちまうのか。');
       else await E.say(name, o.lose || 'へへ、もらって いくぜ。');
     };

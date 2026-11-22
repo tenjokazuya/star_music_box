@@ -22,14 +22,20 @@
 
   // ---------- 設定 ----------
   var Settings = RR.Settings = {
-    defaults: { bgm: 7, se: 8, mt: false, assist: 1, text: 1, pad: 'auto', scale: 'int', shake: true },
+    // assist: 0=OFF 1=よわ 2=つよ（試遊の結果、標準は「つよ」）
+    defaults: { sv: 2, bgm: 7, se: 8, mt: false, assist: 2, text: 1, pad: 'auto', scale: 'int', shake: true },
     data: null
   };
   Settings.load = function () {
     var d = U.deepCopy(Settings.defaults);
     try {
       var raw = store.get(SKEY);
-      if (raw) { var o = JSON.parse(raw); for (var k in o) if (d.hasOwnProperty(k)) d[k] = o[k]; }
+      if (raw) {
+        var o = JSON.parse(raw);
+        for (var k in o) if (d.hasOwnProperty(k)) d[k] = o[k];
+        // 旧版（標準が「よわ」だった頃）の設定は標準の「つよ」に合わせる
+        if (!o.sv || o.sv < 2) { d.assist = Settings.defaults.assist; d.sv = Settings.defaults.sv; }
+      }
     } catch (e) { }
     Settings.data = d;
     return d;

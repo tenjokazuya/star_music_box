@@ -9,14 +9,9 @@
     s.money = 2000;
     s.parts = [];
     s.cars = [];
-    // じいちゃんの車: 長く眠っていたので部品がくたびれている
+    // じいちゃんの車: 主人公が戻る前にテツが整備しておいた（パーツは100%。ほこりは少し残る）
     var car = D.newCar('comet', 'white', s);
-    car.dirt = 70;
-    var wear = { engine: 62, tire: 48, susp: 58, brake: 55, trans: 70, diff: 75, light: 100, aero: 100 };
-    D.SLOTS.forEach(function (slot) {
-      var inst = D.partInstance(car.parts[slot], s);
-      if (inst) inst.dur = wear[slot];
-    });
+    car.dirt = 20;
     s.carUid = car.uid;
     s.furniture = { owned: {}, placed: [] };
     ['bed', 'desk_pc', 'shelf_book', 'clock'].forEach(function (id) { s.furniture.owned[id] = 1; });

@@ -51,7 +51,7 @@
       this.state = 'intro'; this.t = 0; this.time = 0;
       var st = RR.Settings.data;
       this.mt = !!st.mt;
-      var assist = st.assist == null ? 1 : st.assist;
+      var assist = st.assist == null ? 2 : st.assist;
       var carData = D.currentCar();
       this.carData = carData;
       var spec = D.specOf(carData);
@@ -370,6 +370,10 @@
       }
       if (t >= 40) bigText(g, String(3 - Math.min(2, Math.floor((t - 40) / 40))), 120, 76, '#f8f8f8', 3, (t - 40) % 40);
       if (t < 40) F.draw(g, 'Aで エンジンを ふかせる', 120, 120, '#d0d8f8', { align: 'center' });
+      // そうさの せつめい
+      RR.RaceHUD.box(g, 48, 130, 178, 26);
+      F.draw(g, 'A:アクセル  B:ブレーキ  ←→:ハンドル', 137, 133, '#f8f8f8', { align: 'center' });
+      F.draw(g, (this.mt ? 'L/R:シフト  ' : '') + 'START:ポーズ', 137, 145, '#a8b0d0', { align: 'center' });
     },
     drawGoal: function (g) {
       var t = this.t;

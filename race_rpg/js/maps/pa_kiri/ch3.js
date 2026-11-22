@@ -9,6 +9,11 @@
       return;
     }
     if (E.flag('shinobu_found') && !E.flag('shinobu_quest')) { await RR.Story.returnOmamori(E); }
+    if (await RR.Story.gateCheck(E, 'shinobu', {
+      first: ['...きりの キリガタニへ ようこそ。', '......でも まだ はやい。|{who}に かってから。', '...きりの みちに からだを ならす ため でも ある。'],
+      again: ['...{who}が まってる。'],
+      one: ['...{who}が まってる。']
+    })) return;
     await E.say('シノブ', '...きりの キリガタニへ ようこそ。');
     var c = await E.ask('シノブ', 'かけきんは 15000。...はしる?', ['はしる', 'まだ']);
     if (c !== 0) { await E.say('シノブ', '...まってる。'); return; }
