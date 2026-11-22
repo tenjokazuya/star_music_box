@@ -20,7 +20,7 @@
     var car = this.car, c = this.c;
     this.t += dt;
     var u = car.u;
-    if (car.idx == null) { var l0 = C.locate(c, car.x, car.y, null); car.idx = l0.i; car.s = l0.s; }
+    if (car.idx == null) { var l0 = C.locate(c, car.x, car.y, null); car.idx = l0.i; car.s = l0.s; car.d = l0.d; }
     var hw = c.width / 2;
     var look = 4 + Math.max(0, u) * 0.36;
     var sT = car.s + look;
@@ -29,6 +29,10 @@
     var kAhead = c.ks[iT];
     var off = U.clamp(kAhead * 70, -1, 1) * (hw - 1.4) * this.line;
     off += Math.sin(this.t * 0.7) * this.wobble;
+    // スタート直後は自分の車線を保ち、少しずつ走行ラインへ寄る（急に中央へ切り込んで加速を落とさない）
+    if (this.lane0 == null) { this.lane0 = car.d || 0; this.s0 = car.s; }
+    var keep = U.clamp(1 - (car.s - this.s0) / 120, 0, 1);
+    off = off * (1 - keep) + this.lane0 * keep;
     var tx = pt.x + Math.cos(pt.psi) * off, ty = pt.y + Math.sin(pt.psi) * off;
     var fx = Math.sin(car.psi), fy = -Math.cos(car.psi), rx = Math.cos(car.psi), ry = Math.sin(car.psi);
     var dx = tx - car.x, dy = ty - car.y;
@@ -45,7 +49,7 @@
     else if (u < vt + 0.3) thr = U.clamp((vt + 0.3 - u) / 1.3, 0, 1) * 0.8;
     else if (u > vt + 0.6) brk = U.clamp((u - vt) / 4, 0.3, 1);
     // 立ち上がりはハンドルを戻しながら踏む
-    if (Math.abs(steer) > 0.45) thr = Math.min(thr, 1.25 - Math.abs(steer));
+    if (Math.abs(steer) > 0.45 && u > 8) thr = Math.min(thr, 1.25 - Math.abs(steer));
     if ((car.spin[2] || car.spin[3]) && Math.abs(car.beta()) > 0.1) thr *= 0.5;
     if (Math.abs(car.beta()) > 0.3) thr *= 0.5;
     // 引っかかった時の復帰

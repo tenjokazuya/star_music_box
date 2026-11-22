@@ -8,8 +8,8 @@
 
   D.rivals = {
     // ---- ストーリー ----
-    kenta: { name: 'ケンタ', look: 'kenta', car: { model: 'tsubame', color: 'orange' }, skill: 0.78, line: 0.35, wobble: 0.8,
-      parts: {} },
+    kenta: { name: 'ケンタ', look: 'kenta', car: { model: 'tsubame', color: 'orange' }, skill: 0.82, line: 0.5, wobble: 0.6,
+      parts: { tire: 'tire_sport' } },
     saki: { name: 'サキ', look: 'saki', car: { model: 'hayate', color: 'black' }, skill: 0.9, line: 0.8,
       parts: { engine: 'eng_cam', tire: 'tire_drift', susp: 'susp_rear', brake: 'brake_pad', diff: 'diff_2way', light: 'light_interior' } },
     gou: { name: 'ゴウ', look: 'gou', car: { model: 'raiden', color: 'yellow' }, skill: 0.88, line: 0.6, aggr: 1.05,
@@ -23,16 +23,17 @@
     // ---- フリー対戦（町・各パーキング） ----
     yasuo: { name: 'ヤスオ', look: 'man2', car: { model: 'tsubame', color: 'blue' }, skill: 0.8, line: 0.4, wobble: 0.8, parts: {} },
     rin: { name: 'リン', look: 'racer6', car: { model: 'sylph', color: 'pink' }, skill: 0.84, parts: { tire: 'tire_sport', susp: 'susp_down' } },
-    minato: { name: 'ミナト', look: 'racer1', car: { model: 'hayate', color: 'red' }, skill: 0.84, line: 0.5, parts: { tire: 'tire_sport' } },
-    kaori: { name: 'カオリ', look: 'racer3', car: { model: 'sylph', color: 'white' }, skill: 0.86, line: 0.6, parts: { tire: 'tire_sport', susp: 'susp_down', light: 'light_interior' } },
-    ryu: { name: 'リュウ', look: 'racer5', car: { model: 'regulus', color: 'purple' }, skill: 0.87, line: 0.6, parts: { engine: 'eng_bore', tire: 'tire_sport', susp: 'susp_front', trans: 'trans_short' } },
+    minato: { name: 'ミナト', look: 'racer1', car: { model: 'hayate', color: 'red' }, skill: 0.86, parts: { tire: 'tire_sport', brake: 'brake_pad' } },
+    kaori: { name: 'カオリ', look: 'racer3', car: { model: 'sylph', color: 'white' }, skill: 0.88, parts: { tire: 'tire_sport', brake: 'brake_pad', light: 'light_interior' } },
+    ryu: { name: 'リュウ', look: 'racer5', car: { model: 'regulus', color: 'purple' }, skill: 0.87, parts: { engine: 'eng_bore', tire: 'tire_high', susp: 'susp_front', diff: 'diff_1way', trans: 'trans_short' } },
     nobu: { name: 'ノブヒコ', look: 'racer2', car: { model: 'raiden', color: 'blue' }, skill: 0.9, parts: { engine: 'eng_turbo', tire: 'tire_sport', susp: 'susp_down', aero: 'aero_wing' } },
-    tamaki: { name: 'タマキ', look: 'racer4', car: { model: 'hayate', color: 'green' }, skill: 0.92, parts: { engine: 'eng_hicomp', tire: 'tire_hard', susp: 'susp_damper', diff: 'diff_15', brake: 'brake_4pot' } },
+    tamaki: { name: 'タマキ', look: 'racer4', car: { model: 'hayate', color: 'green' }, skill: 0.92, parts: { engine: 'eng_bore', tire: 'tire_hard', susp: 'susp_damper', diff: 'diff_15', brake: 'brake_4pot' } },
     jin: { name: 'ジン', look: 'man3', car: { model: 'regulus', color: 'white' }, skill: 0.93, parts: { engine: 'eng_turbo', tire: 'tire_high', susp: 'susp_coil', brake: 'brake_4pot', diff: 'diff_1way', aero: 'aero_full' } },
-    kai: { name: 'カイ', look: 'racer1', car: { model: 'orochi', color: 'red' }, skill: 0.92, line: 0.7, parts: { engine: 'eng_hicomp', tire: 'tire_high', susp: 'susp_damper', brake: 'brake_race', trans: 'trans_close', diff: 'diff_15', aero: 'aero_wing' } },
+    kai: { name: 'カイ', look: 'racer1', car: { model: 'orochi', color: 'red' }, skill: 0.95, parts: { engine: 'eng_full', tire: 'tire_semi', susp: 'susp_damper', brake: 'brake_race', trans: 'trans_close', diff: 'diff_15', aero: 'aero_wing' } },
     sora2: { name: 'アカネ', look: 'woman1', car: { model: 'orochi', color: 'gold' }, skill: 0.96, parts: { engine: 'eng_full', tire: 'tire_semi', susp: 'susp_coil', brake: 'brake_race', trans: 'trans_6', diff: 'diff_15', light: 'light_bonnet', aero: 'aero_full' } }
   };
 
+  // ※ 各パーキングの走り屋は、その場の頭より少しだけ弱く調整（tools/balance.js 0.9 pa で確認）
   // レース設定: course, rival(省略でタイムアタック), stake(賭け金), target(タイムアタックの目標ms)
   D.races = {
     kenta1: { course: 'urayama', rival: 'kenta', stake: 1000, title: 'ウラヤマざか バトル' },
