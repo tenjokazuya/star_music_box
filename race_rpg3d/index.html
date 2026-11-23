@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#05060a">
+<title>トウゲ・ナイトストーリー 3D</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <div id="stage"><canvas id="gl"></canvas><canvas id="ui"></canvas></div>
+</div>
+<div id="err"></div>
+<!-- 読み込み順が依存関係。ES Modules は使わない（file:// で動かすため）。
+     新しいファイルを足したらここに追加し、node tools/check.js で漏れを確認する -->
+<!-- vendor: three.js r147 (UMD) -->
+<script src="vendor/three/three.min.js"></script>
+<!-- core -->
+<script src="js/core/rr.js"></script>
+<script src="js/core/input.js"></script>
+<script src="js/core/game.js"></script>
+<script src="js/core/debug.js"></script>
+<script src="js/core/font.js"></script>
+<script src="js/core/save.js"></script>
+<script src="js/core/audio.js"></script>
+<script src="js/ui/ui.js"></script>
+<!-- gfx -->
+<script src="js/gfx/paint.js"></script>
+<!-- gfx3d -->
+<script src="js/gfx3d/gl.js"></script>
+<script src="js/gfx3d/gfx.js"></script>
+<!-- field（定義） -->
+<script src="js/field/tiles.js"></script>
+<script src="js/field/props.js"></script>
+<script src="js/field/maps.js"></script>
+<script src="js/field/field.js"></script>
+<script src="js/field/script.js"></script>
+<script src="js/gfx3d/tiles3d.js"></script>
+<script src="js/gfx3d/cars3d.js"></script>
+<script src="js/gfx3d/people3d.js"></script>
+<script src="js/gfx3d/props3d.js"></script>
+<script src="js/gfx3d/buildings3d.js"></script>
+<script src="js/gfx3d/field3d.js"></script>
+<script src="js/gfx3d/sprites.js"></script>
+<!-- data -->
+<script src="js/data/looks.js"></script>
+<script src="js/data/courses.js"></script>
+<!-- race -->
+<script src="js/race/course.js"></script>
+<script src="js/race/physics.js"></script>
+<script src="js/race/ai.js"></script>
+<script src="js/race/race3d.js"></script>
+<script src="js/race/hud.js"></script>
+<script src="js/race/race.js"></script>
+<!-- data (物理に依存) -->
+<script src="js/data/parts.js"></script>
+<script src="js/data/cars.js"></script>
+<script src="js/data/inventory.js"></script>
+<script src="js/data/rivals.js"></script>
+<script src="js/data/foods.js"></script>
+<script src="js/data/furniture.js"></script>
+<script src="js/data/music.js"></script>
+<!-- systems -->
+<script src="js/systems/menu.js"></script>
+<script src="js/systems/garage.js"></script>
+<script src="js/systems/shop.js"></script>
+<script src="js/systems/decorate.js"></script>
+<script src="js/systems/minigames.js"></script>
+<!-- scenes -->
+<script src="js/scenes/title.js"></script>
+<script src="js/scenes/demo.js"></script>
+<script src="js/scenes/ending.js"></script>
+<!-- maps: 1マップ = 1ディレクトリ。layout が地形、その他は進行度別のレイヤー -->
+<script src="js/maps/kit.js"></script>
+<script src="js/maps/story.js"></script>
+<script src="js/maps/town/layout.js"></script>
+<script src="js/maps/town/base.js"></script>
+<script src="js/maps/town/ch0.js"></script>
+<script src="js/maps/town/free.js"></script>
+<script src="js/maps/town/ch2.js"></script>
+<script src="js/maps/town/ch3.js"></script>
+<script src="js/maps/town/ch4.js"></script>
+<script src="js/maps/town/oldroad_gate.js"></script>
+<script src="js/maps/town/post.js"></script>
+<script src="js/maps/home/layout.js"></script>
+<script src="js/maps/home/furniture.js"></script>
+<script src="js/maps/garage/layout.js"></script>
+<script src="js/maps/garage/base.js"></script>
+<script src="js/maps/garage/ch0.js"></script>
+<script src="js/maps/ramen/layout.js"></script>
+<script src="js/maps/ramen/base.js"></script>
+<script src="js/maps/cafe/layout.js"></script>
+<script src="js/maps/cafe/base.js"></script>
+<script src="js/maps/cafe/ch3.js"></script>
+<script src="js/maps/konbini/layout.js"></script>
+<script src="js/maps/konbini/base.js"></script>
+<script src="js/maps/zakka/layout.js"></script>
+<script src="js/maps/zakka/base.js"></script>
+<script src="js/maps/parts/layout.js"></script>
+<script src="js/maps/parts/base.js"></script>
+<script src="js/maps/dealer/layout.js"></script>
+<script src="js/maps/dealer/base.js"></script>
+<script src="js/maps/gs/layout.js"></script>
+<script src="js/maps/gs/base.js"></script>
+<script src="js/maps/pass/layout.js"></script>
+<script src="js/maps/pass/gates.js"></script>
+<script src="js/maps/pa/layouts.js"></script>
+<script src="js/maps/pa_tsuzura/base.js"></script>
+<script src="js/maps/pa_tsuzura/ch1.js"></script>
+<script src="js/maps/pa_tsuzura/after.js"></script>
+<script src="js/maps/pa_hebi/base.js"></script>
+<script src="js/maps/pa_hebi/ch2.js"></script>
+<script src="js/maps/pa_hebi/after.js"></script>
+<script src="js/maps/pa_kiri/base.js"></script>
+<script src="js/maps/pa_kiri/ch3.js"></script>
+<script src="js/maps/pa_kiri/after.js"></script>
+<script src="js/maps/pa_yasha/base.js"></script>
+<script src="js/maps/pa_yasha/ch4.js"></script>
+<script src="js/maps/pa_yasha/post.js"></script>
+<script src="js/maps/kyudo/layout.js"></script>
+<script src="js/maps/kyudo/post.js"></script>
+<!-- boot -->
+<script src="js/main.js"></script>
+</body>
+</html>
