@@ -241,20 +241,28 @@
       var fr = new Gfx.Batch(); fr.box(ax0, ay - 0.4, zF + 0.6, ax1, ay - 0.32, zF + 0.64, U.shade(o.awning, -0.3), { ao: 1 });
       var fmat2 = new T.MeshLambertMaterial({ vertexColors: true }); ctx.group.add(fr.build(fmat2, { cast: false })); fm.push(fmat2);
     }
-    // 看板
+    // 看板: 軒先の手前に吊るす（ひさし・屋根のひさしに隠れない位置）
     if (o.sign) {
       var txt = String(o.sign);
+      var sh = 0.5;
       var sw = Math.min(w - 0.4, Math.max(1.3, txt.length * 0.3 + 0.6));
       var sc = o.signC || '#c83830';
-      var tex = Gfx.textTexture(txt, 256, 64, { bg: sc, fg: o.signT || '#f8f8f8', border: '#181020', shadow: U.shade(sc, -0.5) });
+      var tw = Math.min(768, Math.round(sw / sh * 64));
+      var tex = Gfx.textTexture(txt, tw, 64, { bg: sc, fg: o.signT || '#f8f8f8', border: '#181020', shadow: U.shade(sc, -0.5) });
       var sm = new T.MeshLambertMaterial({ map: tex, emissive: new T.Color(0xffffff), emissiveMap: tex, emissiveIntensity: 0.9 });
-      var smesh = new T.Mesh(new T.PlaneGeometry(sw, sw / 4), sm);
+      var smesh = new T.Mesh(new T.PlaneGeometry(sw, sh), sm);
       var sxc = o.signX != null ? X + o.signX / 16 + sw / 2 : X + w / 2;
-      smesh.position.set(sxc, WH - 0.36, zF + 0.05);
+      var zS = zF + 0.42, yS = WH - 0.3;
+      smesh.position.set(sxc, yS, zS + 0.032);
       ctx.group.add(smesh); fm.push(sm);
-      var bk = new Gfx.Batch(); bk.box(sxc - sw / 2 - 0.03, WH - 0.36 - sw / 8 - 0.03, zF + 0.01, sxc + sw / 2 + 0.03, WH - 0.36 + sw / 8 + 0.03, zF + 0.045, '#181020', { ao: 1 });
+      var bk = new Gfx.Batch();
+      bk.box(sxc - sw / 2 - 0.03, yS - sh / 2 - 0.03, zS - 0.02, sxc + sw / 2 + 0.03, yS + sh / 2 + 0.03, zS + 0.03, '#181020', { ao: 1 });
+      [-1, 1].forEach(function (k) {
+        var bx0 = sxc + k * (sw / 2 - 0.15);
+        bk.box(bx0 - 0.03, yS + sh / 2 - 0.04, zF, bx0 + 0.03, yS + sh / 2 + 0.02, zS, '#383848', { ao: 1 });
+      });
       var bkm = new T.MeshLambertMaterial({ vertexColors: true }); ctx.group.add(bk.build(bkm, { cast: false })); fm.push(bkm);
-      ctx.pool(sxc, zF + 1.0, 1.8, o.signGlow || '#f8a080', 0.3);
+      ctx.pool(sxc, zF + 1.2, 1.8, o.signGlow || '#f8a080', 0.3);
     }
     // 光だまり（窓・ドア・シャッター）
     var lit = o.lit !== false;

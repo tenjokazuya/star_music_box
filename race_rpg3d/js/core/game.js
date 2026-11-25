@@ -258,11 +258,12 @@
       place(q('.btn-select'), vw / 2 - pw - 6, vh - ph - Math.max(10, area * 0.06), pw, ph);
       place(q('.btn-start'), vw / 2 + 6, vh - ph - Math.max(10, area * 0.06), pw, ph);
       var lw = vw * 0.26, lh = Math.max(26, area * 0.1);
+      q('.btn-l').style.display = ''; q('.btn-r').style.display = '';
       place(q('.btn-l'), vw * 0.03, screenBottom + 6, lw, lh);
       place(q('.btn-r'), vw - lw - vw * 0.03, screenBottom + 6, lw, lh);
     } else {
       // 横向き: 3D画面の上に半透明で重ねる
-      var ds2 = Math.min(unit * 0.44, 170);
+      var ds2 = Math.min(unit * 0.37, 160);
       var margin = unit * 0.05;
       var dy = vh - ds2 - margin;
       place(q('.dpad'), margin, dy, ds2, ds2);
@@ -272,6 +273,10 @@
       var lw2 = Math.min(110, vw * 0.12), lh2 = Math.max(28, unit * 0.09);
       place(q('.btn-l'), margin, margin, lw2, lh2);
       place(q('.btn-r'), vw - margin - lw2, margin, lw2, lh2);
+      // L/R はマニュアル（MT）のシフト専用。使わない時は隠して、画面の上の表示と重ねない
+      var useLR = !!(RR.Settings && RR.Settings.data && RR.Settings.data.mt);
+      q('.btn-l').style.display = useLR ? '' : 'none';
+      q('.btn-r').style.display = useLR ? '' : 'none';
       var pw2 = Math.min(84, vw * 0.1), ph2 = Math.max(22, pw2 * 0.32);
       place(q('.btn-select'), vw / 2 - pw2 - 6, vh - ph2 - margin, pw2, ph2);
       place(q('.btn-start'), vw / 2 + 6, vh - ph2 - margin, pw2, ph2);

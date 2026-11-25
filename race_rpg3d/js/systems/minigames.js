@@ -92,6 +92,14 @@
         F.draw(g, 'ランク ' + this.rank, 120, 80, this.rank === 'S' ? '#f8e060' : '#c8d0f0', { align: 'center' });
         F.draw(g, 'バイトだい +¥' + U.money(this.pay), 120, 96, '#f8e060', { align: 'center' });
       }
+      // 画面が基準領域より広いときは、遊ぶ範囲に枠をつける
+      if (RR.OX > 1 || RR.OY > 1) {
+        g.save(); g.strokeStyle = 'rgba(190,206,255,0.55)'; g.lineWidth = 0.8; g.strokeRect(0, 0, 240, 160);
+        g.fillStyle = 'rgba(2,4,14,0.55)';
+        g.fillRect(-RR.OX, -RR.OY, RR.OX, RR.VH); g.fillRect(240, -RR.OY, RR.OX, RR.VH);
+        g.fillRect(0, -RR.OY, 240, RR.OY); g.fillRect(0, 160, 240, RR.OY);
+        g.restore();
+      }
     }
   };
 
@@ -108,7 +116,7 @@
       var models = ['hayate', 'regulus', 'tsubame', 'sylph', 'raiden'];
       var colors = ['red', 'white', 'blue', 'black', 'yellow', 'green'];
       s.car = RR.Sprites.carTop(U.pick(models), U.pick(colors), 2, 0);
-      s.cw = s.car.width * 2; s.ch = s.car.height * 2;
+      s.cw = (s.car.lw || s.car.width) * 2.4; s.ch = (s.car.lh || s.car.height) * 2.4;
       s.cx = 120 - s.cw / 2; s.cy = 82 - s.ch / 2;
       // 汚れの格子（4px毎）
       s.gw = Math.ceil(s.cw / 4); s.gh = Math.ceil(s.ch / 4);
@@ -167,18 +175,19 @@
           var d = s.dirt[gy * s.gw + gx];
           if (d <= 0.05) continue;
           var x = s.cx + gx * 4, yy = s.cy + gy * 4;
-          g.globalAlpha = Math.min(0.85, d);
+          g.globalAlpha = Math.min(0.8, d * 0.9);
           g.fillStyle = ((gx + gy) & 1) ? '#6c5434' : '#8c7048';
-          g.fillRect(x, yy, 4, 4);
+          g.beginPath(); g.arc(x + 2, yy + 2, 3.1, 0, 7); g.fill();
         }
         g.globalAlpha = 1;
       }
-      s.bub.forEach(function (b) { g.fillStyle = b.t > 30 ? '#c0e0f8' : '#f8f8f8'; g.fillRect(Math.round(b.x), Math.round(b.y), 2, 2); });
+      s.bub.forEach(function (b) { g.fillStyle = b.t > 30 ? 'rgba(192,224,248,0.8)' : 'rgba(255,255,255,0.9)'; g.beginPath(); g.arc(b.x, b.y, 1.6, 0, 7); g.fill(); });
       // スポンジ
       var on = In.held('a');
-      g.fillStyle = '#202020'; g.fillRect(s.sx - 9, s.sy - 6, 18, 12);
-      g.fillStyle = on ? '#f8d040' : '#f8e870'; g.fillRect(s.sx - 8, s.sy - 5, 16, 10);
-      g.fillStyle = '#f8f8c0'; g.fillRect(s.sx - 8, s.sy - 5, 16, 2);
+      g.fillStyle = 'rgba(0,0,0,0.35)'; UI.roundRect(g, s.sx - 8, s.sy - 4, 18, 12, 3); g.fill();
+      g.fillStyle = '#202020'; UI.roundRect(g, s.sx - 9, s.sy - 6, 18, 12, 3); g.fill();
+      g.fillStyle = on ? '#f8d040' : '#f8e870'; UI.roundRect(g, s.sx - 8, s.sy - 5, 16, 10, 2.4); g.fill();
+      g.fillStyle = '#f8f8c0'; UI.roundRect(g, s.sx - 7, s.sy - 4.5, 14, 2.4, 1.2); g.fill();
       F.draw(g, 'きれい ' + Math.round(U.clamp(this.clean(s), 0, 1) * 100) + '%', 4, 4, '#f8f8f8');
       F.draw(g, s.cars + ' だい', 4, 16, '#f8e060');
     },

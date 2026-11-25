@@ -305,19 +305,32 @@
       }
       return c.elev[idxs[a]];
     }
-    for (var tI = 0; tI < totalTrees * 1.6 && (nP < totalTrees || nR < totalTrees); tI++) {
+    // 道の中心線の格子（どの区間でも一番近い道までの距離を測る。ヘアピンで別の区間の道に木が乗らないように）
+    var GC = 8, rgrid = {};
+    for (var gi = 0; gi < n; gi += 2) { var gp = pts[gi]; var gk = Math.floor(gp.x / GC) + ',' + Math.floor(gp.y / GC); (rgrid[gk] = rgrid[gk] || []).push(gi); }
+    function nearestRoad(x, z) {
+      var cx = Math.floor(x / GC), cz = Math.floor(z / GC), best = 1e18, bi = -1;
+      for (var ddx = -1; ddx <= 1; ddx++) for (var ddz = -1; ddz <= 1; ddz++) {
+        var arr = rgrid[(cx + ddx) + ',' + (cz + ddz)];
+        if (!arr) continue;
+        for (var q2 = 0; q2 < arr.length; q2++) { var pp = pts[arr[q2]], ex = pp.x - x, ez = pp.y - z, d2 = ex * ex + ez * ez; if (d2 < best) { best = d2; bi = arr[q2]; } }
+      }
+      return { d: Math.sqrt(best), i: bi };
+    }
+    R3.nearestRoad = nearestRoad;
+    for (var tI = 0; tI < totalTrees * 1.8 && (nP < totalTrees || nR < totalTrees); tI++) {
       var ta = Math.floor(rng() * (NS - 1));
       var tside = rng() < 0.5 ? -1 : 1;
       var w2 = (tside < 0 ? wvL : wvR)[ta];
-      var minD = w2 > 0.5 ? hw + 3.6 : hw + 3.4; // ガードレールと岩壁の外側
-      var dist = minD + rng() * (w2 > 0.5 ? 22 : 18);
+      var minD = hw + 4.8; // ガードレール・岩壁の外側（樹冠が路面にかぶらない距離）
+      var dist = minD + rng() * (w2 > 0.5 ? 20 : 16);
       var tp = pts[idxs[ta]];
       var tx = tp.x + Math.cos(tp.psi) * tside * dist, tz = tp.y + Math.sin(tp.psi) * tside * dist;
-      // 反対側の道路に近すぎる所は避ける（ヘアピンの内側など）
-      var loc = C.locate(c, tx, tz, idxs[ta]);
-      if (Math.abs(loc.d) < hw + 3.0) continue;
+      // どの区間の道にも近すぎる所、別の区間の道のほうが近い所は避ける（ヘアピンの内側など）
+      var nr = nearestRoad(tx, tz);
+      if (nr.d < hw + 4.6 || Math.abs(nr.i - idxs[ta]) > 90) continue;
       var ty = terrainY(ta, tside, dist);
-      var kS = 0.7 + rng() * 0.7;
+      var kS = 0.7 + rng() * 0.6;
       var isPine = rng() < 0.6;
       if (isPine ? nP >= totalTrees : nR >= totalTrees) continue;
       eu.set(0, rng() * 6.28, 0); qt.setFromEuler(eu);
@@ -562,8 +575,7 @@
     };
     self.render = function () { RR.GL.render(scene, cam); };
     self.dispose = function () {
-      scene.traverse(function (o) { if (o.geometry && !o.geometry.userData.keep) o.geometry.dispose(); });
-      if (self.pc) self.pc.dispose(); if (self.rc) self.rc.dispose();
+      Gfx.dispose(scene);
     };
     return self;
   };

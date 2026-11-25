@@ -31,19 +31,13 @@
   function disposeWorld() {
     while (worldGroup.children.length) {
       var c = worldGroup.children.pop();
-      c.traverse(function (o) {
-        if (o.geometry && !o.geometry.userData.keep) o.geometry.dispose();
-        if (o.material && !o.material.userData.keep) {
-          var ms = Array.isArray(o.material) ? o.material : [o.material];
-          ms.forEach(function (m) { if (m.map && m.map.userData && m.map.userData.own) m.map.dispose(); });
-        }
-      });
+      Gfx.dispose(c);
     }
     if (tilesObj) { tilesObj.dispose(); tilesObj = null; }
   }
 
   F3.clearActors = function () {
-    F3.models.forEach(function (m) { actorGroup.remove(m.root); if (m.api && m.api.dispose) m.api.dispose(); });
+    F3.models.forEach(function (m) { actorGroup.remove(m.root); if (m.api && m.api.dispose) m.api.dispose(); else Gfx.dispose(m.root); });
     F3.models = [];
   };
 
@@ -107,7 +101,7 @@
     for (i = F3.models.length - 1; i >= 0; i--) {
       m = F3.models[i];
       if (list.indexOf(m.actor) < 0 || m.look !== m.actor.look) {
-        actorGroup.remove(m.root); if (m.api && m.api.dispose) m.api.dispose();
+        actorGroup.remove(m.root); if (m.api && m.api.dispose) m.api.dispose(); else Gfx.dispose(m.root);
         F3.models.splice(i, 1);
       }
     }
@@ -155,7 +149,7 @@
       if (!car) return;
       var key = car.model + ':' + car.color + ':' + Math.round((car.dirt || 0) / 20);
       if (dc.key !== key) {
-        if (dc.car) { worldGroup.remove(dc.car.root); dc.car.dispose(); }
+        if (dc.car) { worldGroup.remove(dc.car.root); Gfx.dispose(dc.car.root); }
         dc.car = RR.Cars3D.create(car.model, car.color, { dirt: car.dirt });
         dc.car.setLights(false);
         var p = dc.d.prop;
@@ -184,7 +178,7 @@
     var asp = RR.GL.aspect();
     var hw = Math.max(3, Math.min(7.2, 7.2 * Math.min(1, asp / 1.7))), hh = 4.2;
     if (m.w <= hw * 2) tx = m.w / 2; else tx = U.clamp(tx, hw, m.w - hw);
-    if (m.h <= hh * 2) tz = m.h / 2 + 0.6; else tz = U.clamp(tz, hh, m.h - hh + 1.2);
+    if (m.h <= hh * 2) tz = m.h / 2 + 0.6; else tz = U.clamp(tz, hh, m.h - hh - 0.6);
     return { x: tx, z: tz };
   };
   var tmpV = new T.Vector3(), camPos = new T.Vector3();

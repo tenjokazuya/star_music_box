@@ -28,7 +28,7 @@
     t.magFilter = T.LinearFilter;
     t.minFilter = opt.noMip ? T.LinearFilter : T.LinearMipmapLinearFilter;
     t.generateMipmaps = !opt.noMip;
-    t.userData = { canvas: c };
+    t.userData = { canvas: c, cached: true };
     texCache[key] = t;
     return t;
   };
@@ -86,12 +86,12 @@
   var matCache = {};
   Gfx.lambert = function (key, o) {
     var k = 'L' + key;
-    if (!matCache[k]) matCache[k] = new T.MeshLambertMaterial(o);
+    if (!matCache[k]) { matCache[k] = new T.MeshLambertMaterial(o); matCache[k].userData.keep = true; }
     return matCache[k];
   };
   Gfx.standard = function (key, o) {
     var k = 'S' + key;
-    if (!matCache[k]) matCache[k] = new T.MeshStandardMaterial(o);
+    if (!matCache[k]) { matCache[k] = new T.MeshStandardMaterial(o); matCache[k].userData.keep = true; }
     return matCache[k];
   };
   // 頂点色のマテリアル
@@ -100,7 +100,7 @@
   Gfx.emissive = function () { return Gfx.basic('emit', { vertexColors: true, fog: true }); };
   Gfx.basic = function (key, o) {
     var k = 'B' + key;
-    if (!matCache[k]) matCache[k] = new T.MeshBasicMaterial(o);
+    if (!matCache[k]) { matCache[k] = new T.MeshBasicMaterial(o); matCache[k].userData.keep = true; }
     return matCache[k];
   };
 
@@ -244,6 +244,7 @@
     if (!m) {
       var c = Gfx.color(color).multiplyScalar(intensity || 1);
       m = poolMats[key] = new T.MeshBasicMaterial({ map: Gfx.glowTexture(), color: c, transparent: true, blending: T.AdditiveBlending, depthWrite: false, fog: false });
+      m.userData.keep = true;
     }
     var mesh = new T.Mesh(new T.PlaneGeometry(r * 2, r * 2).rotateX(-Math.PI / 2), m);
     mesh.renderOrder = 2;
@@ -258,6 +259,7 @@
     if (!m) {
       var c = Gfx.color(color).multiplyScalar(intensity || 1);
       m = sprMats[key] = new T.SpriteMaterial({ map: Gfx.glowTexture(), color: c, transparent: true, blending: T.AdditiveBlending, depthWrite: false, fog: false });
+      m.userData.keep = true;
     }
     var s = new T.Sprite(m);
     s.scale.set(size, size, 1);
@@ -280,10 +282,16 @@
     }, { clamp: true });
   };
 
-  // オブジェクトのリソース解放
+  // オブジェクトのリソース解放（共有のもの = userData.keep / cached は残す）
   Gfx.dispose = function (obj) {
     obj.traverse(function (o) {
       if (o.geometry && !o.geometry.userData.keep) o.geometry.dispose();
+      var ms = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+      ms.forEach(function (m) {
+        if (m.userData && m.userData.keep) return;
+        ['map', 'emissiveMap'].forEach(function (k) { var t = m[k]; if (t && !(t.userData && t.userData.cached)) t.dispose(); });
+        m.dispose();
+      });
     });
   };
 })();

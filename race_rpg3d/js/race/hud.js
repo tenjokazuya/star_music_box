@@ -27,7 +27,8 @@
     var L = sc.x, Tp = sc.y, W = sc.w, H = sc.h;
     var i, frame = RR.Game.frame;
     // ---- 速度計（右下）----
-    var px = L + W - 112, py = Tp + H - 58, pw = 106, ph = 52;
+    var land = !!RR.Game.padLandscape; // 横向きでソフトキーを重ねている時は、下の左右を空ける
+    var px = land ? L + W - 124 : L + W - 112, py = land ? Tp + 6 : Tp + H - 58, pw = 106, ph = 52;
     panel(g, px, py, pw, ph);
     var kmh = Math.round(car.kmh());
     F.draw(g, U.pad(kmh, 3, ' '), px + 74, py + 5, '#f8f8f8', { scale: 3, align: 'right', shadow: 'rgba(0,0,0,0.6)' });
@@ -73,7 +74,9 @@
     if (R.rival) { var ry = prog(R.rival.car.s); g.fillStyle = '#5890f0'; UI.roundRect(g, bx - 1, ry - 1.6, 8, 3.2, 1.4); g.fill(); }
     var pyy = prog(car.s); g.fillStyle = '#f85048'; UI.roundRect(g, bx - 2, pyy - 2.2, 10, 4.4, 1.6); g.fill();
     // ---- タイヤ（荷重=円の大きさ、温度=色）（左下）----
-    var wx = L + 6, wy = Tp + H - 74;
+    var wx = L + 6, wy = land ? Tp + 44 : Tp + H - 74;
+    g.save();
+    if (land) { g.translate(wx, wy); g.scale(0.7, 0.7); g.translate(-wx, -wy); } // 横向きは小さく
     panel(g, wx, wy, 46, 68);
     var cx = wx + 23;
     UI.roundRect(g, cx - 6, wy + 14, 12, 40, 4); g.fillStyle = 'rgba(70,84,128,0.9)'; g.fill();
@@ -90,6 +93,7 @@
     }
     F.draw(g, Math.round(Math.max(car.T[0], car.T[1])) + '', cx, wy + 4, '#a8b0d0', { align: 'center', scale: 0.85 });
     F.draw(g, Math.round(Math.max(car.T[2], car.T[3])) + '', cx, wy + 57, '#a8b0d0', { align: 'center', scale: 0.85 });
+    g.restore();
     // ---- コーナー予告 ----
     drawWarning(g, R, sc);
   };

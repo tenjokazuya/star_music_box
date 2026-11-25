@@ -30,10 +30,10 @@
   S.carSpin = function (model, color, dirt, w, h, k) {
     return tag(RR.Cars3D.snapshot(model, color, dirt, 'spin' + (k & 15), w * 2, h * 2), w, h);
   };
-  // 真上（前が上）。scale=1 で論理 約14x36
+  // 真上（前が上）。scale=1 で論理 10x19（参照元の2倍表示 scale=2 で 20x38）
   S.carTop = function (model, color, scale, dirt) {
     scale = scale || 1;
-    return tag(RR.Cars3D.snapshot(model, color, dirt, 'top', 18 * scale * SS * 2, 44 * scale * SS * 2), 18 * scale, 44 * scale);
+    return tag(RR.Cars3D.snapshot(model, color, dirt, 'top', Math.round(10 * scale * SS * 2), Math.round(19 * scale * SS * 2)), 10 * scale, 19 * scale);
   };
   // 人物の立ち絵。論理 16x24（look から生成）
   S.person = function (look) {

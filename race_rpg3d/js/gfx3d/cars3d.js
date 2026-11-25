@@ -93,6 +93,7 @@
     rimMat = new T.MeshStandardMaterial({ color: 0xc8ccd8, roughness: 0.3, metalness: 0.8, envMap: C3.envMap(), envMapIntensity: 0.9 });
     glassMat = new T.MeshStandardMaterial({ color: 0x0c1424, roughness: 0.08, metalness: 0.7, envMap: C3.envMap(), envMapIntensity: 1.1 });
     blackMat = new T.MeshStandardMaterial({ color: 0x18181e, roughness: 0.6, metalness: 0.2 });
+    [tireMat, rimMat, glassMat, blackMat].forEach(function (m) { m.userData.keep = true; });
   }
 
   // ---------- 生成 ----------
@@ -266,9 +267,7 @@
         wheels[0].steer.rotation.y = wheels[1].steer.rotation.y = -steer;
         for (var i = 0; i < 4; i++) wheels[i].spin.rotation.x += spinRate * dt;
       },
-      dispose: function () {
-        bodyMesh.geometry.dispose(); cabMesh.geometry.dispose(); bodyMat.dispose();
-      }
+      dispose: function () { Gfx.dispose(root); }
     };
     root.userData.car = obj;
     root.traverse(function (o) { if (o.isMesh) { o.castShadow = true; } });
@@ -291,8 +290,8 @@
     var cam;
     var L = car.spec.L;
     if (view === 'top') {
-      cam = new T.OrthographicCamera(-L * 0.35, L * 0.35, L * 0.55 * (h / w) * (w / h) * 1.0, -L * 0.55, 0.1, 30);
-      cam.left = -2.0 * (w / h) * 0.5; cam.right = 2.0 * (w / h) * 0.5; cam.top = 2.9; cam.bottom = -2.9;
+      var half = L * 0.6;
+      cam = new T.OrthographicCamera(-half * (w / h), half * (w / h), half, -half, 0.1, 30);
       cam.position.set(0, 10, 0); cam.up.set(0, 0, -1); cam.lookAt(0, 0, 0);
     } else if (view === 'side') {
       var vh = L * 0.5 * (h / w) * 2;

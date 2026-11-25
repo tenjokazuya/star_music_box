@@ -170,7 +170,7 @@
         body.position.y = moving ? Math.abs(Math.cos(api.phase)) * 0.04 * sc : 0;
         head.rotation.z = moving ? Math.sin(api.phase) * 0.03 : 0;
       },
-      dispose: function () { torso.geometry.dispose(); hm.geometry.dispose(); }
+      dispose: function () { Gfx.dispose(root); }
     };
     return api;
   };
@@ -184,6 +184,7 @@
         g.fillStyle = gr; g.fillRect(0, 0, w, h);
       }, { clamp: true, noMip: true });
       shMat = new T.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, fog: false });
+      shMat.userData.keep = true;
     }
     return shMat;
   };
